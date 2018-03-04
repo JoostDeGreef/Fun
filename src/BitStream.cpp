@@ -50,6 +50,7 @@ unsigned int BitStream::Pop(const unsigned int bits)
 
 bool BitStream::TryPop(unsigned int & data, unsigned int bits)
 {
+    static const unsigned int mask[] = {0,1,3,7,15,31,63,127,255,511,1023,2047,4095,8191,16383};
     if (bits <= BitsAvailable() )
     {
         unsigned int offset = 0;
@@ -61,19 +62,39 @@ bool BitStream::TryPop(unsigned int & data, unsigned int bits)
             assert(m_frontBits < 8);
             if (m_frontBits <= bits)
             {
+                data |= m_frontBuffer & mask[m_frontBits];
                 offset += m_frontBits;
+                bits -= m_frontBits;
+                m_frontBits = 0;
+                m_frontBuffer = 0;
             }
             else
             {
-
+                data |= m_frontBuffer & mask[bits];
                 offset += bits;
+                m_frontBits -= bits;
+                m_frontBuffer >>= bits;
+                bits = 0;
             }
         }
         // pop from buffer
+        while (bits >= 8 && !m_bigBuffer.empty())
+        {
+            assert(m_frontBits == 0);
+            data |= m_bigBuffer.front() << offset;
+            m_bigBuffer.pop_front();
+            offset += 8;
+            bits -= 8;
+        }
         if (bits > 0 && !m_bigBuffer.empty())
         {
             assert(m_frontBits == 0);
-
+            data |= (m_bigBuffer.front() & mask[bits]) << offset;
+            m_frontBuffer = m_bigBuffer.front() >> bits;
+            m_frontBits = 8 - bits;
+            m_bigBuffer.pop_front();
+            offset += bits;
+            bits = 0;
         }
         // pop from back
         if (bits > 0)
@@ -81,7 +102,11 @@ bool BitStream::TryPop(unsigned int & data, unsigned int bits)
             assert(m_frontBits == 0);
             assert(m_bigBuffer.empty());
             assert(m_backBits < 8);
-
+            data |= (m_backBuffer & mask[bits]) << offset;
+            offset += bits;
+            m_backBits -= bits;
+            m_backBuffer >>= bits;
+            bits = 0;
         }
         return true;
     }
@@ -95,7 +120,19 @@ void BitStream::FlushFront()
 {
     if (m_frontBits > 0)
     {
-
+        unsigned int backBits = m_backBits;
+        unsigned int backBuffer = m_backBuffer;
+        for (auto& buffer : m_bigBuffer)
+        {
+            m_frontBuffer |= buffer << m_frontBits;
+            buffer = m_frontBuffer & 255;
+            m_frontBuffer >>= 8;
+        }
+        m_backBits = m_frontBits;
+        m_backBuffer = m_frontBuffer;
+        m_frontBits = 0;
+        m_frontBuffer = 0;
+        Push(backBuffer, backBits);
     }
 }
 
@@ -103,11 +140,11 @@ void BitStream::FlushBack()
 {
     if (m_backBits > 0)
     {
-
+        Push(0, 8-m_backBits);
     }
 }
 
-unsigned int BitStream::BitsAvailable() const
+size_t BitStream::BitsAvailable() const
 {
     return m_bigBuffer.size()*8 + m_frontBits + m_backBits;
 }
