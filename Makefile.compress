@@ -1,0 +1,14 @@
+
+NAME:=Compress
+
+INCLUDE:=-I../3rdParty/include
+DEFINES:=-DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE
+LIBS:=../3rdParty/lib/libGoogleTest.a -lpthread
+
+SOURCES:= \
+src/BitStream.cpp \
+src/BitStreamTest.cpp \
+src/CompressTest.cpp
+
+include Makefile.inc
+
