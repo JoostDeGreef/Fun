@@ -154,13 +154,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\BitStream.cpp" />
-    <ClCompile Include="..\src\BitStreamTest.cpp" />
+    <ClCompile Include="..\src\BitBuffer.cpp" />
+    <ClCompile Include="..\src\BitBufferTest.cpp" />
     <ClCompile Include="..\src\CompressTest.cpp" />
+    <ClCompile Include="..\src\ICompress.cpp" />
+    <ClCompile Include="..\src\PassThrough.cpp" />
+    <ClCompile Include="..\src\StaticHuffman.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\BitStream.h" />
+    <ClInclude Include="..\src\BitBuffer.h" />
     <ClInclude Include="..\src\CommonTestFunctionality.h" />
+    <ClInclude Include="..\src\ICompress.h" />
+    <ClInclude Include="..\src\PassThrough.h" />
+    <ClInclude Include="..\src\StaticHuffman.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

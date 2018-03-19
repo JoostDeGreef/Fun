@@ -4,12 +4,12 @@
 #include <vector>
 #include <deque>
 
-class BitStream
+class BitBuffer
 {
 private:
 
 public:
-    BitStream();
+    BitBuffer();
 
     void Push(unsigned int data, unsigned int bits);
 

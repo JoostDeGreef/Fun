@@ -1,8 +1,8 @@
 #include <cassert>
 
-#include "BitStream.h"
+#include "BitBuffer.h"
 
-BitStream::BitStream()
+BitBuffer::BitBuffer()
     : m_bigBuffer()
     , m_frontBuffer(0)
     , m_frontBits(0)
@@ -10,7 +10,7 @@ BitStream::BitStream()
     , m_backBits(0)
 {}
 
-void BitStream::Push(unsigned int data, unsigned int bits)
+void BitBuffer::Push(unsigned int data, unsigned int bits)
 {
     assert(bits <= sizeof(data) * 8);
     assert(m_backBits < 8);
@@ -40,7 +40,7 @@ void BitStream::Push(unsigned int data, unsigned int bits)
     }
 }
 
-unsigned int BitStream::Pop(const unsigned int bits)
+unsigned int BitBuffer::Pop(const unsigned int bits)
 {
     unsigned int data = 0;
     bool res = TryPop(data, bits);
@@ -48,7 +48,7 @@ unsigned int BitStream::Pop(const unsigned int bits)
     return data;
 }
 
-bool BitStream::TryPop(unsigned int & data, unsigned int bits)
+bool BitBuffer::TryPop(unsigned int & data, unsigned int bits)
 {
     static const unsigned int mask[] = {0,1,3,7,15,31,63,127,255,511,1023,2047,4095,8191,16383};
     if (bits <= BitsAvailable() )
@@ -116,7 +116,7 @@ bool BitStream::TryPop(unsigned int & data, unsigned int bits)
     }
 }
 
-void BitStream::FlushFront()
+void BitBuffer::FlushFront()
 {
     if (m_frontBits > 0)
     {
@@ -136,7 +136,7 @@ void BitStream::FlushFront()
     }
 }
 
-void BitStream::FlushBack()
+void BitBuffer::FlushBack()
 {
     if (m_backBits > 0)
     {
@@ -144,7 +144,7 @@ void BitStream::FlushBack()
     }
 }
 
-size_t BitStream::BitsAvailable() const
+size_t BitBuffer::BitsAvailable() const
 {
     return m_bigBuffer.size()*8 + m_frontBits + m_backBits;
 }
