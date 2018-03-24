@@ -2,10 +2,7 @@
 
 #include "ICompress.h"
 
-// byte stream format:
-//   value -> value
-
-class PassThroughCompressor : public ICompressor
+class WindowCompressor : public ICompressor
 {
 public:
     void Compress(std::vector<unsigned char>& ioBuffer) override;
@@ -13,7 +10,7 @@ public:
 private:
 };
 
-class PassThroughDeCompressor : public IDeCompressor
+class WindowDeCompressor : public IDeCompressor
 {
 public:
     void DeCompress(std::vector<unsigned char>& ioBuffer) override;

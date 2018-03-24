@@ -20,6 +20,8 @@ public:
 enum class CompressorType
 {
     PassThrough,
+    RLE,
+    Window,
     StaticHuffman,
 };
 

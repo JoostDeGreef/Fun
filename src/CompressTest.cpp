@@ -2,8 +2,6 @@
 
 #include "CommonTestFunctionality.h"
 
-#include "ICompress.h"
-
 class CompressTest : public Test
 {
 protected:
@@ -19,31 +17,34 @@ protected:
     {
         return
         {
-            '1','1','2','2','3','3','4','4','5','5',
-            '1','1','2','2','3','3','4','4','5',
-            '1','1','2','2','3','3','4','4',
-            '1','1','2','2','3','3','4',
-            '1','1','2','2','3','3',
-            '1','1','2','2','3',
-            '1','1','2','2',
-            '1','1','2',
-            '1','1',
-            '1',
+            '1','1','1','1','1','1','1','1','1','1',
+            '2','2','2','2','2','2','2','2','2',
+            '3','3','3','3','3','3','3','3',
+            '4','4','4','4','4','4','4',
+            '5','5','5','5','5','5',
+            '6','6','6','6','6',
+            '7','7','7','7',
+            '8','8','8',
+            '9','9',
+            '0',
         };
     }
 
 };
 
-TEST_F(CompressTest, Construct)
+TEST_F(CompressTest, Finish)
 {
-    std::vector<unsigned char> input = GetInputData();
-    auto compressor = CompressorFactory::Create(CompressorType::PassThrough);
-    auto deCompressor = DeCompressorFactory::Create(CompressorType::PassThrough);
-    auto compressed = input;
-    compressor->Finish(compressed);
-    auto deCompressed = compressed;
-    deCompressor->Finish(deCompressed);
-    ASSERT_EQ(input,deCompressed);
-    SUCCEED() << "ratio: " << (double)compressed.size() / (double)input.size();
+    for (auto type : { CompressorType::PassThrough, CompressorType::RLE, CompressorType::Window, CompressorType::StaticHuffman })
+    {
+        std::vector<unsigned char> input = GetInputData();
+        auto compressor = CompressorFactory::Create(type);
+        auto deCompressor = DeCompressorFactory::Create(type);
+        auto compressed = input;
+        compressor->Finish(compressed);
+        auto deCompressed = compressed;
+        deCompressor->Finish(deCompressed);
+        ASSERT_EQ(input, deCompressed);
+        SUCCEED() << "ratio for type " << type << ": " << (double)compressed.size() / (double)input.size();
+    }
 }
 

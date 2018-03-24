@@ -12,6 +12,7 @@ public:
     BitBuffer();
 
     void Push(unsigned int data, unsigned int bits);
+    void Push(const std::vector<unsigned char>& data, unsigned int bits);
 
     unsigned int Pop(const unsigned int bits);
     bool TryPop(unsigned int& data, unsigned int bits);
@@ -21,6 +22,7 @@ public:
 
     size_t BitsAvailable() const;
 
+    void RetrieveFrontBytes(std::vector<unsigned char>& outBuffer);
 private:
     std::deque<unsigned char> m_bigBuffer;
     unsigned int m_frontBuffer;

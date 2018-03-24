@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 
 #include "BitBuffer.h"
@@ -39,6 +40,17 @@ void BitBuffer::Push(unsigned int data, unsigned int bits)
         }
     }
 }
+
+void BitBuffer::Push(const std::vector<unsigned char>& data, unsigned int bits)
+{
+    assert(data.size() == (bits + 7) / 8);
+    for (const auto c : data)
+    {
+        Push(c, std::min(bits, static_cast<unsigned int>(8)));
+        bits -= 8;
+    }
+}
+
 
 unsigned int BitBuffer::Pop(const unsigned int bits)
 {
@@ -147,4 +159,15 @@ void BitBuffer::FlushBack()
 size_t BitBuffer::BitsAvailable() const
 {
     return m_bigBuffer.size()*8 + m_frontBits + m_backBits;
+}
+
+void BitBuffer::RetrieveFrontBytes(std::vector<unsigned char>& outBuffer)
+{
+    FlushFront();
+    if (outBuffer.capacity() < m_bigBuffer.size() + outBuffer.size())
+    {
+        outBuffer.reserve(m_bigBuffer.size() + outBuffer.size());
+    }
+    outBuffer.insert(outBuffer.end(), m_bigBuffer.begin(), m_bigBuffer.end());
+    m_bigBuffer.clear();
 }

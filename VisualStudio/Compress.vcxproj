@@ -159,14 +159,18 @@
     <ClCompile Include="..\src\CompressTest.cpp" />
     <ClCompile Include="..\src\ICompress.cpp" />
     <ClCompile Include="..\src\PassThrough.cpp" />
+    <ClCompile Include="..\src\RLE.cpp" />
     <ClCompile Include="..\src\StaticHuffman.cpp" />
+    <ClCompile Include="..\src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BitBuffer.h" />
     <ClInclude Include="..\src\CommonTestFunctionality.h" />
     <ClInclude Include="..\src\ICompress.h" />
     <ClInclude Include="..\src\PassThrough.h" />
+    <ClInclude Include="..\src\RLE.h" />
     <ClInclude Include="..\src\StaticHuffman.h" />
+    <ClInclude Include="..\src\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
