@@ -31,6 +31,7 @@ protected:
 
     struct Key
     {
+        unsigned int value;
         size_t length;
         std::vector<unsigned char> bits;
     };
@@ -38,7 +39,6 @@ protected:
 
     enum class NodeType
     {
-        root,
         branch,
         leaf
     };
@@ -52,7 +52,7 @@ protected:
         };
     };
     std::array<Node, (256 + 2) * 2> m_treeCache;
-    Node m_tree;
+    Node& m_tree;
 };
 
 class StaticHuffmanCompressor : public ICompressor, StaticHuffmanCommon

@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <array>
+#include <cassert>
 #include <deque>
 
 #include "StaticHuffman.h"
@@ -8,6 +10,7 @@ const double StaticHuffmanCommon::diffTrigger = 0.1;
 StaticHuffmanCommon::StaticHuffmanCommon()
     : m_counts()
     , m_buffer()
+    , m_tree(m_treeCache[0])
 {
     m_counts.fill(0);
     BuildTree();
@@ -15,12 +18,106 @@ StaticHuffmanCommon::StaticHuffmanCommon()
 
 void StaticHuffmanCommon::BuildTree()
 {
-    for (auto& key : m_keys)
+    for (unsigned int i=0;i<256;++i)
     {
-        key.length = 0;
-        key.bits.clear();
+        m_keys[i].value = i;
+        m_keys[i].length = m_counts[i];
+        m_keys[i].bits.clear();
     }
-    // todo
+    for (unsigned int i : {keyTable, keyEnd})
+    {
+        m_keys[i].value = i;
+        m_keys[i].length = 1;
+        m_keys[i].bits.clear();
+    }
+    std::array<Key*, 256 + 2> keyPtr;
+    for (size_t i = 0; i < 256 + 2; ++i)
+    {
+        keyPtr[i] = &m_keys[i];
+    }
+    // sort by count,value
+    auto sortByCount = [](Key* a, Key* b)
+    {
+        return (a->length > b->length) || (a->length == b->length && a->value < b->value);
+    };
+    std::sort(keyPtr.begin(), keyPtr.end(), sortByCount);
+    // make counts cummulative for quick bisecting
+    size_t count = 0;
+    for (auto& ptr : keyPtr)
+    {
+        count += ptr->length;
+        ptr->length = count;
+    }
+    class BiSector
+    {
+    public:
+        BiSector(std::array<Node, (256 + 2) * 2>& treeCache)
+            : m_treeCache(treeCache)
+            , m_cacheUsed(0)
+        {}
+
+        void Run(std::array<Key*, 256 + 2>::iterator begin,
+                 std::array<Key*, 256 + 2>::iterator end)
+        {
+            Node* node = GetNode();
+            Split(begin, end, node, BitBuffer());
+        };
+
+    private:
+        void Split(std::array<Key*, 256 + 2>::iterator begin,
+                   std::array<Key*, 256 + 2>::iterator end,
+                   Node* node,
+                   BitBuffer bits)
+        {
+            auto dist = std::distance(begin, end);
+            switch (dist)
+            {
+            case 0:
+                assert(false);
+            case 1:
+                {
+                    node->type = NodeType::leaf;
+                    node->leaf = (**begin).value;
+                    (**begin).length = bits.BitsAvailable();
+                    bits.FlushBack();
+                    bits.RetrieveFrontBytes((**begin).bits);
+                    break;
+                }
+            default:
+                {
+                    node->type = NodeType::branch;
+                    node->node[0] = GetNode();
+                    node->node[1] = GetNode();
+
+                    // todo
+                    // - find middle
+                    // - call Split twice
+
+                    size_t avg = ((**begin).length + (**(begin + dist - 1)).length) / 2;
+                    auto mid = std::upper_bound(begin, end, avg, [](const std::array<Key*, 256 + 2>::iterator& a, const std::array<Key*, 256 + 2>::iterator& b) 
+                    {
+
+                    });
+                    if (mid == begin)
+                    {
+                        mid++;
+                    }
+
+                    break;
+                }
+            }
+        };
+
+        Node* GetNode()
+        {
+            return &m_treeCache[m_cacheUsed++];
+        }
+
+        std::array<Node, (256 + 2) * 2>& m_treeCache;
+        unsigned int m_cacheUsed;
+    };
+    BiSector bisector(m_treeCache);
+    bisector.Run(keyPtr.begin(), keyPtr.end());
 }
 
 
