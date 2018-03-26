@@ -64,6 +64,25 @@ void StaticHuffmanCommon::BuildTree()
         };
 
     private:
+        std::array<Key*, 256 + 2>::iterator FindFirstAboveValue(
+                   std::array<Key*, 256 + 2>::iterator begin,
+                   std::array<Key*, 256 + 2>::iterator end,
+                   size_t value)
+        {
+            // todo
+        }
+        
+        void FillNode(Node* node,
+                      unsigned int index,
+                      std::array<Key*, 256 + 2>::iterator begin,
+                      std::array<Key*, 256 + 2>::iterator end,
+                      BitBuffer bits)
+        {
+            node->node[index] = GetNode();
+            bits.Push(index,1);
+            Split(begin,end,node->node[index],bits);
+        }
+        
         void Split(std::array<Key*, 256 + 2>::iterator begin,
                    std::array<Key*, 256 + 2>::iterator end,
                    Node* node,
@@ -75,34 +94,24 @@ void StaticHuffmanCommon::BuildTree()
             case 0:
                 assert(false);
             case 1:
-                {
-                    node->type = NodeType::leaf;
-                    node->leaf = (**begin).value;
-                    (**begin).length = bits.BitsAvailable();
-                    bits.FlushBack();
-                    bits.RetrieveFrontBytes((**begin).bits);
-                    break;
-                }
+                node->type = NodeType::leaf;
+                node->leaf = (**begin).value;
+                (**begin).length = bits.BitsAvailable();
+                bits.FlushBack();
+                bits.RetrieveFrontBytes((**begin).bits);
+                break;
+            case 2:
+                node->type = NodeType::branch;
+                FillNode(node,0,begin,begin+1,bits);
+                FillNode(node,1,begin+1,end,bits);
+                break;
             default:
                 {
                     node->type = NodeType::branch;
-                    node->node[0] = GetNode();
-                    node->node[1] = GetNode();
-
-                    // todo
-                    // - find middle
-                    // - call Split twice
-
                     size_t avg = ((**begin).length + (**(begin + dist - 1)).length) / 2;
-                    auto mid = std::upper_bound(begin, end, avg, [](const std::array<Key*, 256 + 2>::iterator& a, const std::array<Key*, 256 + 2>::iterator& b) 
-                    {
-
-                    });
-                    if (mid == begin)
-                    {
-                        mid++;
-                    }
-
+                    auto mid = FindFirstAboveValue(begin,end,avg); 
+                    FillNode(node,0,begin,mid,bits);
+                    FillNode(node,1,mid,end,bits);                    
                     break;
                 }
             }

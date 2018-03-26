@@ -1,8 +1,11 @@
 #include <algorithm>
 #include <cassert>
+#include <stdexcept>
 
 #include "RLE.h"
 
+const unsigned char RLECommon::m_escape = 255;
+ 
 void RLECompressor::DumpCurrent(std::vector<unsigned char>& buffer)
 {
     while (m_count > 0)
@@ -29,6 +32,7 @@ void RLECompressor::DumpCurrent(std::vector<unsigned char>& buffer)
                 m_count = 0;
                 break;
             }
+            [[fallthrough]];
         default:
             // todo: smarter split if m_count>255
             auto run = static_cast<unsigned char>(std::min(m_count,static_cast<decltype(m_count)>(255)));
@@ -133,7 +137,7 @@ void RLEDeCompressor::Finish(std::vector<unsigned char>& buffer)
     DeCompress(buffer);
     if (m_escaped)
     {
-        throw std::exception("Incomplete data");
+        throw std::runtime_error("Incomplete data");
     }
 }
 

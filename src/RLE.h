@@ -10,7 +10,7 @@
 class RLECommon
 {
 protected:
-    static const unsigned char m_escape = 255;
+    static const unsigned char m_escape;
 };
 
 

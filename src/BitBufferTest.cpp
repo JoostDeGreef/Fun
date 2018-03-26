@@ -19,14 +19,14 @@ TEST_F(BitBufferTest, PushTryPopPopBackOnly)
     BitBuffer bb;
     unsigned int data;
     bb.Push(2, 2);
-    EXPECT_EQ(2, bb.BitsAvailable());
+    EXPECT_EQ(2ul, bb.BitsAvailable());
     EXPECT_FALSE(bb.TryPop(data, 3));
     EXPECT_TRUE(bb.TryPop(data, 1));
-    EXPECT_EQ(0, data);
-    EXPECT_EQ(1, bb.BitsAvailable());
+    EXPECT_EQ(0u, data);
+    EXPECT_EQ(1ul, bb.BitsAvailable());
     data = bb.Pop(1);
-    EXPECT_EQ(1, data);
-    EXPECT_EQ(0, bb.BitsAvailable());
+    EXPECT_EQ(1u, data);
+    EXPECT_EQ(0ul, bb.BitsAvailable());
 }
 
 TEST_F(BitBufferTest, PushTryPopPopBuffered)
@@ -34,17 +34,17 @@ TEST_F(BitBufferTest, PushTryPopPopBuffered)
     BitBuffer bb;
     unsigned int data;
     bb.Push(2, 2);
-    EXPECT_EQ(2, bb.BitsAvailable());
+    EXPECT_EQ(2ul, bb.BitsAvailable());
     EXPECT_FALSE(bb.TryPop(data, 3));
     bb.Push(42, 8);
     EXPECT_TRUE(bb.TryPop(data, 1));
-    EXPECT_EQ(0, data);
-    EXPECT_EQ(9, bb.BitsAvailable());
+    EXPECT_EQ(0u, data);
+    EXPECT_EQ(9ul, bb.BitsAvailable());
     data = bb.Pop(1);
-    EXPECT_EQ(1, data);
-    EXPECT_EQ(8, bb.BitsAvailable());
+    EXPECT_EQ(1u, data);
+    EXPECT_EQ(8ul, bb.BitsAvailable());
     data = bb.Pop(8);
-    EXPECT_EQ(42, data);
+    EXPECT_EQ(42u, data);
 }
 
 TEST_F(BitBufferTest, PushTryPopPopMany)
@@ -61,6 +61,6 @@ TEST_F(BitBufferTest, PushTryPopPopMany)
         data = bb.Pop(i.second);
         EXPECT_EQ(i.first,data);
     }
-    EXPECT_EQ(0, bb.BitsAvailable());
+    EXPECT_EQ(0ul, bb.BitsAvailable());
 }
 

@@ -6,9 +6,14 @@ DEFINES:=-DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE
 LIBS:=../3rdParty/lib/libGoogleTest.a -lpthread
 
 SOURCES:= \
-src/BitStream.cpp \
-src/BitStreamTest.cpp \
-src/CompressTest.cpp
+src/BitBuffer.cpp \
+src/BitBufferTest.cpp \
+src/CompressTest.cpp \
+src/ICompress.cpp \
+src/PassThrough.cpp \
+src/RLE.cpp \
+src/StaticHuffman.cpp \
+src/Window.cpp
 
 include Makefile.inc
 
