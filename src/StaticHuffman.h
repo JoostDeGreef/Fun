@@ -53,6 +53,9 @@ protected:
     };
     std::array<Node, (256 + 2) * 2> m_treeCache;
     Node& m_tree;
+
+    void WriteNode(Node& node); 
+    void ReadNode(); // m_treeCache will be overwritten!
 };
 
 class StaticHuffmanCompressor : public ICompressor, StaticHuffmanCommon

@@ -69,7 +69,35 @@ void StaticHuffmanCommon::BuildTree()
                    std::array<Key*, 256 + 2>::iterator end,
                    size_t value)
         {
-            // todo
+            auto dist = std::distance(begin, end);
+            assert(dist >= 2);
+            if (dist == 2)
+            {
+                return begin+1;
+            }
+            else if(dist<5)
+            {
+                auto mid = begin + 1;
+                auto next = mid + 1;
+                for (; next != end && (**mid).length<value; ++next)
+                {
+                    mid = next;
+                }
+                return mid;
+            }
+            else
+            {
+                auto mid = begin + (dist / 2);
+                if ((**mid).length < value)
+                {
+                    mid = FindFirstAboveValue(mid, end, value);
+                }
+                else
+                {
+                    mid = FindFirstAboveValue(begin, mid, value);
+                }
+                return mid;
+            }
         }
         
         void FillNode(Node* node,
@@ -129,6 +157,25 @@ void StaticHuffmanCommon::BuildTree()
     bisector.Run(keyPtr.begin(), keyPtr.end());
 }
 
+void StaticHuffmanCommon::WriteNode(Node& node)
+{
+    if (node.type == NodeType::branch)
+    {
+        m_buffer.Push(0u, 1u);
+        // todo
+    }
+    else
+    {
+        m_buffer.Push(1u, 1u);
+        // todo
+    }
+}
+
+void StaticHuffmanCommon::ReadNode()
+{
+    auto type = m_buffer.Pop(1u) == 0 ? NodeType::branch : NodeType::leaf;
+    // todo
+}
 
 StaticHuffmanCompressor::StaticHuffmanCompressor()
     : StaticHuffmanCommon()
@@ -207,6 +254,20 @@ void StaticHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer)
 void StaticHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 {
     Compress(ioBuffer);
+
+    if (!m_inBuffer.empty())
+    {
+        WriteKeyUsingTree(keyTable);
+        BuildTree();
+        WriteTree();
+        for(const auto c: m_inBuffer)
+        {
+            WriteKeyUsingTree(c);
+        }
+    }
+
+    WriteKeyUsingTree(keyEnd);
+
 }
 
 

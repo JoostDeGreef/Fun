@@ -34,7 +34,8 @@ protected:
 
 TEST_F(CompressTest, Finish)
 {
-    for (auto type : { CompressorType::PassThrough, CompressorType::RLE, CompressorType::Window, CompressorType::StaticHuffman })
+//    for (auto type : { CompressorType::PassThrough, CompressorType::RLE, CompressorType::Window, CompressorType::StaticHuffman })
+    for (auto type : { CompressorType::StaticHuffman })
     {
         std::vector<unsigned char> input = GetInputData();
         auto compressor = CompressorFactory::Create(type);
@@ -43,7 +44,7 @@ TEST_F(CompressTest, Finish)
         compressor->Finish(compressed);
         auto deCompressed = compressed;
         deCompressor->Finish(deCompressed);
-        ASSERT_EQ(input, deCompressed);
+        EXPECT_EQ(input, deCompressed);
         SUCCEED() << "ratio for type " << type << ": " << (double)compressed.size() / (double)input.size();
     }
 }
