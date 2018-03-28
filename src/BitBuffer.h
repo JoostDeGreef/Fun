@@ -11,6 +11,8 @@ private:
 public:
     BitBuffer();
 
+    void Swap(BitBuffer& other);
+
     void Push(unsigned int data, unsigned int bits);
     void Push(const std::vector<unsigned char>& data, unsigned int bits);
 
@@ -21,6 +23,9 @@ public:
     void FlushBack(); // fill the buffer with 0 so it ends on a whole byte
 
     size_t BitsAvailable() const;
+
+    bool Empty() const;
+    bool HasData() const;
 
     void RetrieveFrontBytes(std::vector<unsigned char>& outBuffer);
 private:

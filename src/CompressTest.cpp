@@ -34,8 +34,8 @@ protected:
 
 TEST_F(CompressTest, Finish)
 {
-//    for (auto type : { CompressorType::PassThrough, CompressorType::RLE, CompressorType::Window, CompressorType::StaticHuffman })
-    for (auto type : { CompressorType::StaticHuffman })
+    for (auto type : { CompressorType::PassThrough, CompressorType::RLE, CompressorType::Window, CompressorType::StaticHuffman })
+//    for (auto type : { CompressorType::StaticHuffman })
     {
         std::vector<unsigned char> input = GetInputData();
         auto compressor = CompressorFactory::Create(type);

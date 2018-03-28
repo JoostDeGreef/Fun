@@ -11,6 +11,15 @@ BitBuffer::BitBuffer()
     , m_backBits(0)
 {}
 
+void BitBuffer::Swap(BitBuffer& other)
+{
+    m_bigBuffer.swap(other.m_bigBuffer);
+    std::swap(m_frontBuffer, other.m_frontBuffer);
+    std::swap(m_frontBits, other.m_frontBits);
+    std::swap(m_backBuffer, other.m_backBuffer);
+    std::swap(m_backBits, other.m_backBits);
+}
+
 void BitBuffer::Push(unsigned int data, unsigned int bits)
 {
     assert(bits <= sizeof(data) * 8);
@@ -160,6 +169,17 @@ size_t BitBuffer::BitsAvailable() const
 {
     return m_bigBuffer.size()*8 + m_frontBits + m_backBits;
 }
+
+bool BitBuffer::HasData() const
+{
+    return m_frontBits > 0 || m_backBits > 0 || !m_bigBuffer.empty();
+}
+
+bool BitBuffer::Empty() const
+{
+    return !HasData();
+}
+
 
 void BitBuffer::RetrieveFrontBytes(std::vector<unsigned char>& outBuffer)
 {

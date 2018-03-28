@@ -80,6 +80,7 @@ public:
     void Finish(std::vector<unsigned char>& ioBuffer) override;
 
 private:
-    void ReadTree();
+    bool ReadTree();
+    Node* m_currentNode;
 };
 
