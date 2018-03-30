@@ -64,3 +64,22 @@ TEST_F(BitBufferTest, PushTryPopPopMany)
     EXPECT_EQ(0ul, bb.BitsAvailable());
 }
 
+TEST_F(BitBufferTest, FlushRetrieve)
+{
+    BitBuffer bits;
+    std::vector<unsigned char> out;
+    for(int i=0;i<100;++i)
+    {
+        for(int j=0;j<i;++j)
+        {
+            bits.Push(1u,1u);
+        }
+        unsigned int count = bits.BitsAvailable();
+        bits.FlushBack();
+        bits.RetrieveFrontBytes(out);
+        EXPECT_LE(count,out.size()*8);
+        bits.Clear();
+        out.clear();
+    }
+}
+

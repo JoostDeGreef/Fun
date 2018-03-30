@@ -3,7 +3,7 @@ AR=ar
 CC=gcc
 CPP=g++
 CFLAGS=-W -Wall
-CPPFLAGS=-W -Wall
+CPPFLAGS=-W -Wall -g -ggdb
 #CFLAGS=
 #CPPFLAGS=
 

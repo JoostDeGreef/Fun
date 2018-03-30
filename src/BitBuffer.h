@@ -26,6 +26,8 @@ public:
 
     bool Empty() const;
     bool HasData() const;
+    
+    void Clear();
 
     void RetrieveFrontBytes(std::vector<unsigned char>& outBuffer);
 private:

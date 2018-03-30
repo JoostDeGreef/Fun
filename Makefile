@@ -8,7 +8,7 @@ all:
 	
 .PHONY: clean
 clean:
-	rm -f *~
+	rm -f *~ core
 	rm -rf tmp
 	rm -rf bin
 	

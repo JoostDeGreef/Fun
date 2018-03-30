@@ -20,6 +20,15 @@ void BitBuffer::Swap(BitBuffer& other)
     std::swap(m_backBits, other.m_backBits);
 }
 
+void BitBuffer::Clear()
+{
+    m_bigBuffer.clear();
+    m_frontBuffer = 0;
+    m_frontBits = 0;
+    m_backBuffer = 0;
+    m_backBits = 0;
+}
+
 void BitBuffer::Push(unsigned int data, unsigned int bits)
 {
     assert(bits <= sizeof(data) * 8);

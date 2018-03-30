@@ -144,7 +144,7 @@ void StaticHuffmanCommon::BuildTree()
                     size_t avg = ((**begin).length + (**(begin + dist - 1)).length) / 2;
                     auto mid = FindFirstAboveValue(begin,end,avg); 
                     FillNode(node,0,begin,mid,bits);
-                    FillNode(node,1,mid,end,bits);                    
+                    FillNode(node,1,mid,end,bits);
                     break;
                 }
             }
@@ -396,13 +396,17 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
         if (m_currentNode->type == NodeType::branch)
         {
             unsigned int index;
-            while (run = run && m_buffer.TryPop(index,1u))
+            if(m_buffer.BitsAvailable()>=m_keys[keyEnd].length)
             {
-                m_currentNode = m_currentNode->node[index];
-                if (m_currentNode->type == NodeType::leaf)
+                for(;m_currentNode->type != NodeType::leaf;)
                 {
-                    break;
+                    index = m_buffer.Pop(1u);
+                    m_currentNode = m_currentNode->node[index];
                 }
+            }
+            else
+            {
+                run = false;
             }
         }
         else
@@ -417,6 +421,15 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
                 }
                 break;
             case keyEnd:
+                // see if the filling bits are 0
+                if(m_buffer.BitsAvailable()<8)
+                {
+                    unsigned int i=m_buffer.Pop(m_buffer.BitsAvailable());
+                    if(i != 0)
+                    {
+                        throw std::runtime_error("Invalid data");
+                    }
+                }
                 // stop any further actions.
                 run = false;
                 break;
@@ -432,7 +445,7 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
 void StaticHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 {
     DeCompress(ioBuffer);
-    if (m_buffer.BitsAvailable()>=8 ||
+    if (m_buffer.HasData() ||
         m_currentNode->type == NodeType::branch ||
         m_currentNode->leaf != keyEnd)
     {
