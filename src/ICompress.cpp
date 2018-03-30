@@ -8,15 +8,17 @@
 #include "RLE.h"
 #include "Window.h"
 #include "StaticHuffman.h"
+#include "PipeLine.h"
 
 std::shared_ptr<ICompressor> CompressorFactory::Create(const CompressorType compressorType)
 {
     switch (compressorType)
     {
-    case CompressorType::PassThrough:   return std::make_shared<PassThroughCompressor>();
-    case CompressorType::RLE:           return std::make_shared<RLECompressor>();
-    case CompressorType::Window:        return std::make_shared<WindowCompressor>();
-    case CompressorType::StaticHuffman: return std::make_shared<StaticHuffmanCompressor>();
+    case CompressorType::PassThrough:       return std::make_shared<PassThroughCompressor>();
+    case CompressorType::RLE:               return std::make_shared<RLECompressor>();
+    case CompressorType::Window:            return std::make_shared<WindowCompressor>();
+    case CompressorType::StaticHuffman:     return std::make_shared<StaticHuffmanCompressor>();
+    case CompressorType::RLE_StaticHuffman: return std::make_shared<PipeLineCompressor<RLECompressor, StaticHuffmanCompressor>>();
     }
     assert(false);
     return std::shared_ptr<ICompressor>();
@@ -26,10 +28,11 @@ std::shared_ptr<IDeCompressor> DeCompressorFactory::Create(const CompressorType 
 {
     switch (compressorType)
     {
-    case CompressorType::PassThrough:   return std::make_shared<PassThroughDeCompressor>();
-    case CompressorType::RLE:           return std::make_shared<RLEDeCompressor>();
-    case CompressorType::Window:        return std::make_shared<WindowDeCompressor>();
-    case CompressorType::StaticHuffman: return std::make_shared<StaticHuffmanDeCompressor>();
+    case CompressorType::PassThrough:       return std::make_shared<PassThroughDeCompressor>();
+    case CompressorType::RLE:               return std::make_shared<RLEDeCompressor>();
+    case CompressorType::Window:            return std::make_shared<WindowDeCompressor>();
+    case CompressorType::StaticHuffman:     return std::make_shared<StaticHuffmanDeCompressor>();
+    case CompressorType::RLE_StaticHuffman: return std::make_shared<PipeLineDeCompressor<RLEDeCompressor, StaticHuffmanDeCompressor>>();
     }
     assert(false);
     return std::shared_ptr<IDeCompressor>();

@@ -43,7 +43,7 @@ void BitBuffer::Push(unsigned int data, unsigned int bits)
         }
         else if (m_backBits == 0)
         {
-            m_bigBuffer.push_back(data & 255);
+            m_bigBuffer.emplace_back(data & 255);
             data >>= 8;
             bits -= 8;
         }
@@ -52,7 +52,7 @@ void BitBuffer::Push(unsigned int data, unsigned int bits)
             m_backBuffer |= (data << m_backBits) & 255;
             data >>= 8 - m_backBits;
             bits -= 8 - m_backBits;
-            m_bigBuffer.push_back(m_backBuffer);
+            m_bigBuffer.emplace_back(m_backBuffer);
             m_backBits = 0;
             m_backBuffer = 0;
         }
@@ -62,10 +62,14 @@ void BitBuffer::Push(unsigned int data, unsigned int bits)
 void BitBuffer::Push(const std::vector<unsigned char>& data, unsigned int bits)
 {
     assert(data.size() == (bits + 7) / 8);
-    for (const auto c : data)
+    for (unsigned int i = 0; i < bits / 8; ++i)
     {
-        Push(c, std::min(bits, static_cast<unsigned int>(8)));
-        bits -= 8;
+        Push(data[i], 8);
+    }
+    bits = bits % 8;
+    if (bits != 0)
+    {
+        Push(data.back(),bits);
     }
 }
 

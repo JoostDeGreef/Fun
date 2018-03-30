@@ -23,6 +23,7 @@
     <ProjectGuid>{44D6D9EC-70FF-49E8-960B-474CEF1ABFB4}</ProjectGuid>
     <RootNamespace>Compress</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <ProjectName>Compress</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -96,6 +97,9 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(solutiondir)..\include;$(solutiondir)..\..\3rdParty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(solutiondir)..\..\3rdParty\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -110,6 +114,9 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(solutiondir)..\include;$(solutiondir)..\..\3rdParty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(solutiondir)..\..\3rdParty\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -126,6 +133,9 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(solutiondir)..\include;$(solutiondir)..\..\3rdParty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -144,6 +154,9 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(solutiondir)..\include;$(solutiondir)..\..\3rdParty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -168,6 +181,7 @@
     <ClInclude Include="..\src\CommonTestFunctionality.h" />
     <ClInclude Include="..\src\ICompress.h" />
     <ClInclude Include="..\src\PassThrough.h" />
+    <ClInclude Include="..\src\PipeLine.h" />
     <ClInclude Include="..\src\RLE.h" />
     <ClInclude Include="..\src\StaticHuffman.h" />
     <ClInclude Include="..\src\Window.h" />

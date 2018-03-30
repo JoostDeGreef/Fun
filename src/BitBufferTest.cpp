@@ -74,7 +74,7 @@ TEST_F(BitBufferTest, FlushRetrieve)
         {
             bits.Push(1u,1u);
         }
-        unsigned int count = bits.BitsAvailable();
+        size_t count = bits.BitsAvailable();
         bits.FlushBack();
         bits.RetrieveFrontBytes(out);
         EXPECT_LE(count,out.size()*8);

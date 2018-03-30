@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\BitBuffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BitBufferTest.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\CompressTest.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ICompress.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PassThrough.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RLE.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\StaticHuffman.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Window.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\BitBuffer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\CommonTestFunctionality.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ICompress.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PassThrough.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RLE.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\StaticHuffman.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Window.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PipeLine.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{6d3c13c5-b69c-4353-a7f1-00489ced74d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{fbd0fd21-2e76-4a8a-837d-06b9f632aa85}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

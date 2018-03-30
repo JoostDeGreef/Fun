@@ -1,4 +1,5 @@
 #include <memory>
+#include <random>
 
 #include "CommonTestFunctionality.h"
 
@@ -27,6 +28,15 @@ protected:
         switch(type)
         {
         case InputType::Random:
+            {
+                std::mt19937 rng;
+                rng.seed(0); // make test repeatable
+                std::uniform_int_distribution<unsigned int> dist(0, 10);
+                for (int i = 0; i<10000000; ++i)
+                {
+                    res.emplace_back(static_cast<unsigned char>(dist(rng)));
+                }
+            }
             break;
         case InputType::Decreasing:
             for(int i=50;i>0;--i)
@@ -38,7 +48,7 @@ protected:
             }
             break;
         case InputType::Alternating:
-            for(int i=0;i<10000;++i)
+            for(int i=0;i<10000000;++i)
             {
                 res.insert(res.end(),alternating_values.begin(),alternating_values.end());
             }
@@ -58,6 +68,7 @@ inline std::ostream& operator<<(std::ostream& stream, InputType const& it)
     {
     case InputType::Random:      return stream << "Random";
     case InputType::Decreasing:  return stream << "Decreasing";
+    case InputType::Alternating: return stream << "Alternating";
     default: 
         assert(false);
         return stream << "Unknown(" << static_cast<int>(it) << ")";
@@ -66,10 +77,10 @@ inline std::ostream& operator<<(std::ostream& stream, InputType const& it)
 
 TEST_F(CompressTest, Ratio)
 {
-    for (auto compressorType : { CompressorType::PassThrough, CompressorType::RLE, CompressorType::Window, CompressorType::StaticHuffman })
+    for (auto compressorType : { CompressorType::PassThrough, CompressorType::RLE, CompressorType::Window, CompressorType::StaticHuffman, CompressorType::RLE_StaticHuffman })
     {
         SUCCEED() << "compressor type = " << compressorType;
-        for(auto inputType : { InputType::Random, InputType::Decreasing })
+        for(auto inputType : { InputType::Random, InputType::Alternating, InputType::Decreasing })
         {
             std::vector<unsigned char> input = GetInputData(inputType);
             auto compressor = CompressorFactory::Create(compressorType);

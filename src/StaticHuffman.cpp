@@ -264,7 +264,10 @@ void StaticHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 
     if (!m_inBuffer.empty())
     {
-        m_counts = m_newCounts;
+        for (size_t i = 0; i < 256; ++i)
+        {
+            m_counts[i] += m_newCounts[i];
+        }
         WriteKeyUsingTree(keyTable);
         BuildTree();
         WriteTree();
@@ -371,19 +374,29 @@ bool StaticHuffmanDeCompressor::ReadTree()
         std::array<Node, (256 + 2) * 2>& m_treeCache;
         std::array<Key, 256 + 2>& m_keys;
     };
-    BitBuffer tempBuffer(m_buffer);
-    Helper helper(tempBuffer,m_treeCache,m_keys);
-    if (nullptr != helper.ReadNode())
+    if (m_buffer.BitsAvailable() >= (256 + 2) * 2)
     {
-        helper.ClearKeys();
-        helper.BuildKeys();
-        tempBuffer.Swap(m_buffer);
-        return true;
+        Helper helper(m_buffer, m_treeCache, m_keys);
+        if (nullptr != helper.ReadNode())
+        {
+            helper.ClearKeys();
+            helper.BuildKeys();
+            return true;
+        }
     }
     else
     {
-        return false;
+        BitBuffer tempBuffer(m_buffer);
+        Helper helper(tempBuffer, m_treeCache, m_keys);
+        if (nullptr != helper.ReadNode())
+        {
+            helper.ClearKeys();
+            helper.BuildKeys();
+            tempBuffer.Swap(m_buffer);
+            return true;
+        }
     }
+    return false;
 }
 
 void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
@@ -424,7 +437,7 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
                 // see if the filling bits are 0
                 if(m_buffer.BitsAvailable()<8)
                 {
-                    unsigned int i=m_buffer.Pop(m_buffer.BitsAvailable());
+                    unsigned int i=m_buffer.Pop(static_cast<unsigned int>(m_buffer.BitsAvailable()));
                     if(i != 0)
                     {
                         throw std::runtime_error("Invalid data");
