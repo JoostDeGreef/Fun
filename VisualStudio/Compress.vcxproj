@@ -173,6 +173,7 @@
     <ClCompile Include="..\src\ICompress.cpp" />
     <ClCompile Include="..\src\PassThrough.cpp" />
     <ClCompile Include="..\src\RLE.cpp" />
+    <ClCompile Include="..\src\StaticBlockHuffman.cpp" />
     <ClCompile Include="..\src\StaticHuffman.cpp" />
     <ClCompile Include="..\src\Window.cpp" />
   </ItemGroup>
@@ -183,6 +184,7 @@
     <ClInclude Include="..\src\PassThrough.h" />
     <ClInclude Include="..\src\PipeLine.h" />
     <ClInclude Include="..\src\RLE.h" />
+    <ClInclude Include="..\src\StaticBlockHuffman.h" />
     <ClInclude Include="..\src\StaticHuffman.h" />
     <ClInclude Include="..\src\Window.h" />
   </ItemGroup>

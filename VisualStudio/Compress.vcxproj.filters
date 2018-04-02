@@ -25,6 +25,9 @@
     <ClCompile Include="..\src\Window.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\StaticBlockHuffman.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BitBuffer.h">
@@ -49,6 +52,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\PipeLine.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\StaticBlockHuffman.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

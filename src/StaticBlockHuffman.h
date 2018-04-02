@@ -4,21 +4,31 @@
 #include "ICompress.h"
 
 // bit stream format:
-//   - write table
-//   - write keys
+//   - init with (new table:0),(end:1)
+//   - repeat until done:
+//       write table
+//       write keys
 //   - write end
 
-class StaticHuffmanCommon
+// todo: split off HuffmanCommon<KEY_COUNT>
+class StaticBlockHuffmanCommon
 {
 protected:
-    static const unsigned int keyEnd = 256;
+    static const unsigned int keyTable = 256;
+    static const unsigned int keyEnd = 257;
 
-    StaticHuffmanCommon();
+    static const size_t blockSize = 128;
+    static const size_t initialBlocks = 8;
+    static const double diffTrigger;
+
+    StaticBlockHuffmanCommon();
 
     void BuildTree();
 
     typedef std::array<size_t, 256> CountTable;
     CountTable m_counts;
+
+    BitBuffer m_buffer;
 
     struct Key
     {
@@ -26,7 +36,7 @@ protected:
         size_t length;
         std::vector<unsigned char> bits;
     };
-    std::array<Key, 256 + 1> m_keys;
+    std::array<Key, 256 + 2> m_keys;
 
     enum class NodeType
     {
@@ -42,29 +52,30 @@ protected:
             unsigned int leaf;
         };
     };
-    std::array<Node, (256 + 1) * 2> m_treeCache;
+    std::array<Node, (256 + 2) * 2> m_treeCache;
     Node& m_tree;
 };
 
-class StaticHuffmanCompressor : public ICompressor, StaticHuffmanCommon
+class StaticBlockHuffmanCompressor : public ICompressor, StaticBlockHuffmanCommon
 {
 public:
-    StaticHuffmanCompressor();
+    StaticBlockHuffmanCompressor();
 
     void Compress(std::vector<unsigned char>& ioBuffer) override;
     void Finish(std::vector<unsigned char>& ioBuffer) override;
 
 private:
-    void WriteTree(BitBuffer& buffer) const;
-    void WriteKeyUsingTree(BitBuffer& buffer, unsigned int key) const;
+    void WriteTree();
+    void WriteKeyUsingTree(unsigned int key);
 
+    CountTable m_newCounts;
     std::deque<unsigned char> m_inBuffer;
 };
 
-class StaticHuffmanDeCompressor : public IDeCompressor, StaticHuffmanCommon
+class StaticBlockHuffmanDeCompressor : public IDeCompressor, StaticBlockHuffmanCommon
 {
 public:
-    StaticHuffmanDeCompressor();
+    StaticBlockHuffmanDeCompressor();
 
     void DeCompress(std::vector<unsigned char>& ioBuffer) override;
     void Finish(std::vector<unsigned char>& ioBuffer) override;
@@ -72,6 +83,5 @@ public:
 private:
     bool ReadTree();
     Node* m_currentNode;
-    BitBuffer m_inBuffer;
 };
 
