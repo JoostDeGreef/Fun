@@ -22,14 +22,14 @@ private:
     template <size_t ...I>
     struct make_reversed_index_sequence<0, I...> : public reversed_index_sequence<I...> {};
 
-    template<class... Objects>
-    using reversed_index_sequence_for = make_reversed_index_sequence<sizeof...(Objects)>;
+    template<class... ObjectsToIndex>
+    using reversed_index_sequence_for = make_reversed_index_sequence<sizeof...(ObjectsToIndex)>;
 
     template<typename Func>
-    void ApplyImplementation(Func&& func)
+    void ApplyImplementation(Func&& /*func*/)
     {}
-    template<typename Func, class Object, class... Objects>
-    void ApplyImplementation(Func&& func, Object& object, Objects& ... objects)
+    template<typename Func, class ApplyObject, class... ApplyObjects>
+    void ApplyImplementation(Func&& func, ApplyObject& object, ApplyObjects& ... objects)
     {
         func(object);
         ApplyImplementation(func, objects...);
@@ -41,7 +41,7 @@ private:
     }
 protected:
     template<typename Func>
-    void Apply(Func&& func, const bool reverse = false)
+    void Apply(Func&& func, const bool reverse)
     {
         if (reverse)
         {
@@ -60,11 +60,11 @@ class PipeLineCompressor : public ICompressor, PipeLineCommon<Compressors...>
 public:
     void Compress(std::vector<unsigned char>& ioBuffer) override
     {
-        Apply([&ioBuffer](ICompressor& compressor) {compressor.Compress(ioBuffer); });
+        this->Apply([&ioBuffer](ICompressor& compressor) {compressor.Compress(ioBuffer); }, false);
     }
     void Finish(std::vector<unsigned char>& ioBuffer) override
     {
-        Apply([&ioBuffer](ICompressor& compressor) {compressor.Finish(ioBuffer); });
+        this->Apply([&ioBuffer](ICompressor& compressor) {compressor.Finish(ioBuffer); }, false);
     }
 };
 
@@ -74,11 +74,11 @@ class PipeLineDeCompressor : public IDeCompressor, PipeLineCommon<DeCompressors.
 public:
     void DeCompress(std::vector<unsigned char>& ioBuffer) override
     {
-        Apply([&ioBuffer](IDeCompressor& decompressor) {decompressor.DeCompress(ioBuffer); }, true);
+        this->Apply([&ioBuffer](IDeCompressor& decompressor) {decompressor.DeCompress(ioBuffer); }, true);
     }
     void Finish(std::vector<unsigned char>& ioBuffer) override
     {
-        Apply([&ioBuffer](IDeCompressor& decompressor) {decompressor.Finish(ioBuffer); }, true);
+        this->Apply([&ioBuffer](IDeCompressor& decompressor) {decompressor.Finish(ioBuffer); }, true);
     }
 };
 

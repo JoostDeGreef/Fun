@@ -4,6 +4,7 @@
 #include <map>
 #include <cassert>
 #include <sstream>
+#include <iostream>
 
 #include "CommonTestFunctionality.h"
 
@@ -203,6 +204,7 @@ TEST_F(CompressTest, Ratio)
         s << "  " << it.first;
     }
     SUCCEED() << s.str();
+    std::cout << s.str() << std::endl;
     for(auto ct: info)
     {
         std::stringstream().swap(s);
@@ -215,6 +217,7 @@ TEST_F(CompressTest, Ratio)
             s << std::string(l-r.size()-2, ' ') << r << " %  ";
         }
         SUCCEED() << s.str();
+        std::cout << s.str() << std::endl;
     }
 }
 
