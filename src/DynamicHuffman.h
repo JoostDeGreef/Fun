@@ -11,47 +11,44 @@
 //       write keys
 //   - write end
 
-class StaticBlockHuffmanCommon : public HuffmanCommon<258>
+class DynamicHuffmanCommon : public HuffmanCommon<258>
 {
 protected:
-    static const unsigned int keyTable = 256;
+    static const unsigned int keyNew = 256;
     static const unsigned int keyEnd = 257;
 
-    static const size_t blockSize = 128;
-    static const size_t initialBlocks = 8;
-    static const double diffTrigger;
+    static const unsigned int lifetime = 1000;
 
-    StaticBlockHuffmanCommon();
+    DynamicHuffmanCommon();
+
+    void UpdateHistory(unsigned int key);
 
     BitBuffer m_buffer;
+    std::array<unsigned int, lifetime> m_history;
+    unsigned int m_historyIndex;
 };
 
-class StaticBlockHuffmanCompressor : public ICompressor, StaticBlockHuffmanCommon
+class DynamicHuffmanCompressor : public ICompressor, DynamicHuffmanCommon
 {
 public:
-    StaticBlockHuffmanCompressor();
+    DynamicHuffmanCompressor();
 
     void Compress(std::vector<unsigned char>& ioBuffer) override;
     void Finish(std::vector<unsigned char>& ioBuffer) override;
 
 private:
-    void WriteTree();
     void WriteKeyUsingTree(unsigned int key);
-
-    Counts m_newCounts;
-    std::deque<unsigned char> m_inBuffer;
 };
 
-class StaticBlockHuffmanDeCompressor : public IDeCompressor, StaticBlockHuffmanCommon
+class DynamicHuffmanDeCompressor : public IDeCompressor, DynamicHuffmanCommon
 {
 public:
-    StaticBlockHuffmanDeCompressor();
+    DynamicHuffmanDeCompressor();
 
     void DeCompress(std::vector<unsigned char>& ioBuffer) override;
     void Finish(std::vector<unsigned char>& ioBuffer) override;
 
 private:
-    bool ReadTree();
     Node* m_currentNode;
 };
 

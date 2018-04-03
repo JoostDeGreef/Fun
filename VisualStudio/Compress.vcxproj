@@ -170,6 +170,7 @@
     <ClCompile Include="..\src\BitBuffer.cpp" />
     <ClCompile Include="..\src\BitBufferTest.cpp" />
     <ClCompile Include="..\src\CompressTest.cpp" />
+    <ClCompile Include="..\src\DynamicHuffman.cpp" />
     <ClCompile Include="..\src\ICompress.cpp" />
     <ClCompile Include="..\src\PassThrough.cpp" />
     <ClCompile Include="..\src\RLE.cpp" />
@@ -180,6 +181,8 @@
   <ItemGroup>
     <ClInclude Include="..\src\BitBuffer.h" />
     <ClInclude Include="..\src\CommonTestFunctionality.h" />
+    <ClInclude Include="..\src\DynamicHuffman.h" />
+    <ClInclude Include="..\src\HuffmanCommon.h" />
     <ClInclude Include="..\src\ICompress.h" />
     <ClInclude Include="..\src\PassThrough.h" />
     <ClInclude Include="..\src\PipeLine.h" />

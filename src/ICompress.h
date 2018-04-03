@@ -24,8 +24,10 @@ enum class CompressorType
     Window,
     StaticHuffman,
     StaticBlockHuffman,
+    DynamicHuffman,
     RLE_StaticHuffman,
     RLE_StaticBlockHuffman,
+    RLE_DynamicHuffman,
 };
 
 class CompressorFactory

@@ -28,6 +28,9 @@
     <ClCompile Include="..\src\StaticBlockHuffman.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\DynamicHuffman.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BitBuffer.h">
@@ -55,6 +58,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\StaticBlockHuffman.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DynamicHuffman.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\HuffmanCommon.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

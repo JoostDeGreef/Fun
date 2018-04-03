@@ -21,7 +21,7 @@ protected:
 #ifdef _DEBUG
     static const size_t m_size = 10000;
 #else
-    static const size_t m_size = 1000000;
+    static const size_t m_size = 5000000;
 #endif
 
     virtual void SetUp()
@@ -111,8 +111,10 @@ protected:
             CompressorType::Window,
             CompressorType::StaticHuffman,
             CompressorType::StaticBlockHuffman,
+            CompressorType::DynamicHuffman,
             CompressorType::RLE_StaticHuffman,
-            CompressorType::RLE_StaticBlockHuffman
+            CompressorType::RLE_StaticBlockHuffman,
+            CompressorType::RLE_DynamicHuffman
         };
     }
 
@@ -154,8 +156,10 @@ inline std::string to_string(CompressorType const& ct)
     case CompressorType::Window:                 return "Window";
     case CompressorType::StaticHuffman:          return "StaticHuffman";
     case CompressorType::StaticBlockHuffman:     return "StaticBlockHuffman";
+    case CompressorType::DynamicHuffman:         return "DynamicHuffman";
     case CompressorType::RLE_StaticHuffman:      return "RLE_StaticHuffman";
     case CompressorType::RLE_StaticBlockHuffman: return "RLE_StaticBlockHuffman";
+    case CompressorType::RLE_DynamicHuffman:     return "RLE_DynamicHuffman";
     default:
         assert(false);
         return  "Unknown(" + std::to_string(static_cast<int>(ct)) + ")";
@@ -223,18 +227,10 @@ TEST_F(CompressTest, Ratio)
 
 TEST_F(CompressTest, DISABLED_RatioOri)
 {
-    for (auto compressorType : { CompressorType::PassThrough,
-        CompressorType::RLE,
-        CompressorType::Window,
-        CompressorType::StaticHuffman,
-        CompressorType::StaticBlockHuffman,
-        CompressorType::RLE_StaticHuffman,
-        CompressorType::RLE_StaticBlockHuffman })
+    for (auto compressorType : GetCompressorTypes())
     {
         SUCCEED() << "compressor type = " << compressorType;
-        for (auto inputType : { InputType::Random,
-            InputType::Sequence,
-            InputType::Sawtooth })
+        for (auto inputType : GetInputTypes())
         {
             std::vector<unsigned char> input = GetInputData(inputType);
             auto compressor = CompressorFactory::Create(compressorType);

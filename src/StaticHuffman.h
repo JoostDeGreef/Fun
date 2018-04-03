@@ -2,48 +2,19 @@
 
 #include "BitBuffer.h"
 #include "ICompress.h"
+#include "HuffmanCommon.h"
 
 // bit stream format:
 //   - write table
 //   - write keys
 //   - write end
 
-class StaticHuffmanCommon
+class StaticHuffmanCommon : public HuffmanCommon<257>
 {
 protected:
     static const unsigned int keyEnd = 256;
 
     StaticHuffmanCommon();
-
-    void BuildTree();
-
-    typedef std::array<size_t, 256> CountTable;
-    CountTable m_counts;
-
-    struct Key
-    {
-        unsigned int value;
-        size_t length;
-        std::vector<unsigned char> bits;
-    };
-    std::array<Key, 256 + 1> m_keys;
-
-    enum class NodeType
-    {
-        branch,
-        leaf
-    };
-    struct Node
-    {
-        NodeType type;
-        union
-        {
-            Node* node[2];
-            unsigned int leaf;
-        };
-    };
-    std::array<Node, (256 + 1) * 2> m_treeCache;
-    Node& m_tree;
 };
 
 class StaticHuffmanCompressor : public ICompressor, StaticHuffmanCommon
