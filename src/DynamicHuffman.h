@@ -17,7 +17,7 @@ protected:
     static const unsigned int keyNew = 256;
     static const unsigned int keyEnd = 257;
 
-    static const unsigned int lifetime = 1000;
+    static const unsigned int lifetime = 16384;
 
     DynamicHuffmanCommon();
 

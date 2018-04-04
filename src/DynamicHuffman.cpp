@@ -21,6 +21,10 @@ void DynamicHuffmanCommon::UpdateHistory(unsigned int key)
     if (key != static_cast<unsigned int>(-1))
     {
         m_counts[key]--;
+        if (m_counts[key] == 0)
+        {
+            m_counts[keyNew]--;
+        }
     }
     m_historyIndex++;
     if (m_historyIndex >= lifetime)
@@ -50,6 +54,7 @@ void DynamicHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer)
         {
             WriteKeyUsingTree(keyNew);
             m_buffer.Push(c, 8u);
+            m_counts[keyNew]++;
         }
         else
         {
@@ -120,6 +125,7 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
                     unsigned int c = m_buffer.Pop(8u);
                     ioBuffer.emplace_back(static_cast<unsigned char>(c));
                     assert(m_counts[c] == 0);
+                    m_counts[keyNew]++;
                     UpdateHistory(c);
                     m_currentNode = &m_tree;
                 }

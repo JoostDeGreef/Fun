@@ -17,7 +17,7 @@ StaticBlockHuffmanCommon::StaticBlockHuffmanCommon()
 StaticBlockHuffmanCompressor::StaticBlockHuffmanCompressor()
     : StaticBlockHuffmanCommon()
 {
-    m_newCounts.fill(0);
+    ClearCounts(m_newCounts);
 }
 
 void StaticBlockHuffmanCompressor::WriteKeyUsingTree(unsigned int key)
@@ -88,7 +88,7 @@ void StaticBlockHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer
                     {
                         m_counts[i] += m_newCounts[i];
                     }
-                    m_newCounts.fill(0);
+                    ClearCounts(m_newCounts);
                 }
                 else
                 {
@@ -96,7 +96,7 @@ void StaticBlockHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer
                     BuildTree();
                     WriteTree();
                     m_counts = m_newCounts;
-                    m_newCounts.fill(0);
+                    ClearCounts(m_newCounts);
                     while (m_inBuffer.size() > blockSize)
                     {
                         WriteKeyUsingTree(m_inBuffer.front());

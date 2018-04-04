@@ -12,11 +12,21 @@ protected:
         : m_counts()
         , m_tree(m_treeCache[0])
     {
-        m_counts.fill(0);
+        ClearCounts(m_counts);
     }
 
-    typedef std::array<size_t, 256> Counts;
+    typedef std::array<size_t, m_keyCount> Counts;
     Counts m_counts;
+
+    void ClearCounts(Counts& counts)
+    {
+        counts.fill(0);
+        // extra keys (commands)
+        for (unsigned int i = 256; i<m_keyCount; ++i)
+        {
+            counts[i] = 1;
+        }
+    }
 
     struct Key
     {
@@ -48,18 +58,10 @@ protected:
 
     void BuildTree()
     {
-        // plain keys
-        for (unsigned int i = 0; i<256; ++i)
+        for (unsigned int i = 0; i<m_keyCount; ++i)
         {
             m_keys[i].value = i;
             m_keys[i].length = m_counts[i];
-            m_keys[i].bits.clear();
-        }
-        // extra keys (commands)
-        for (unsigned int i=256;i<m_keyCount;++i)
-        {
-            m_keys[i].value = i;
-            m_keys[i].length = 1;
             m_keys[i].bits.clear();
         }
         KeyPtrs keyPtr;

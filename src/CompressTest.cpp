@@ -13,6 +13,7 @@ enum class InputType
     Random,       // random values [0..10]
     Sequence,     // repeat sequence (1,2,3,4,5,6)
     Sawtooth,     // sawtooth 1-50 times values (1,2,3,4,5,6)
+    Single,       // one value (42)
 };
 
 class CompressTest : public Test
@@ -21,7 +22,7 @@ protected:
 #ifdef _DEBUG
     static const size_t m_size = 10000;
 #else
-    static const size_t m_size = 5000000;
+    static const size_t m_size = 100000;
 #endif
 
     virtual void SetUp()
@@ -93,7 +94,15 @@ protected:
                     }
                     break;
                 }
-            default:
+                case InputType::Single:
+                {
+                    while (res.size()<m_size)
+                    {
+                        res.emplace_back(42);
+                    }
+                    break;
+                }
+                default:
                 assert(false);
                 break;
             }
@@ -124,7 +133,8 @@ protected:
         {
             InputType::Random,
             InputType::Sequence,
-            InputType::Sawtooth
+            InputType::Sawtooth,
+            InputType::Single,
         };
     }
 };
@@ -136,6 +146,7 @@ inline std::string to_string(InputType const& it)
     case InputType::Random:      return "Random";
     case InputType::Sequence:    return "Sequence";
     case InputType::Sawtooth:    return "Sawtooth";
+    case InputType::Single:      return "Single";
     default:
         assert(false);
         return "Unknown(" + std::to_string(static_cast<int>(it)) + ")";
@@ -176,12 +187,17 @@ TEST_F(CompressTest, Ratio)
     class Data
     {
     public:
-        Data(const double& ratio)
+        Data(const double& ratio,long long msCompres,long long msDeCompres)
             : m_ratio(ratio)
+            , m_msCompres(msCompres)
+            , m_msDeCompres(msDeCompres)
         {}
 
         double m_ratio;
+        long long m_msCompres;
+        long long m_msDeCompres;
     };
+    StopWatch sw;
     size_t compressorTypeLength = 0;
     std::map<CompressorType, std::map<InputType, Data>> info;
     for (auto compressorType : GetCompressorTypes())
@@ -194,11 +210,15 @@ TEST_F(CompressTest, Ratio)
             auto compressor = CompressorFactory::Create(compressorType);
             auto deCompressor = DeCompressorFactory::Create(compressorType);
             auto compressed = input;
+            sw.Reset();
             compressor->Finish(compressed);
+            auto t0 = sw.GetMS();
             auto deCompressed = compressed;
+            sw.Reset();
             deCompressor->Finish(deCompressed);
+            auto t1 = sw.GetMS();
             EXPECT_EQ(input, deCompressed);
-            iter->second.emplace(inputType,Data((double)compressed.size() / (double)input.size()));
+            iter->second.emplace(inputType,Data((double)compressed.size() / (double)input.size(), t0, t1));
         }
     }
     std::stringstream s;
@@ -207,10 +227,12 @@ TEST_F(CompressTest, Ratio)
     {
         s << "  " << it.first;
     }
+    s << "   Time (ms)";
     SUCCEED() << s.str();
     std::cout << s.str() << std::endl;
     for(auto ct: info)
     {
+        long long t0 = 0, t1 = 0;
         std::stringstream().swap(s);
         std::string c = to_string(ct.first);
         s << std::string(compressorTypeLength - c.size(),' ') << c << ": ";
@@ -219,7 +241,10 @@ TEST_F(CompressTest, Ratio)
             size_t l = to_string(it.first).size();
             auto r = std::to_string(static_cast<int>(it.second.m_ratio * 100));
             s << std::string(l-r.size()-2, ' ') << r << " %  ";
+            t0 += it.second.m_msCompres;
+            t1 += it.second.m_msDeCompres;
         }
+        s << " " << t0 << "/" << t1;
         SUCCEED() << s.str();
         std::cout << s.str() << std::endl;
     }
