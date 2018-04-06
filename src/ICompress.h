@@ -25,11 +25,9 @@ enum class CompressorType
     StaticHuffman,
     StaticBlockHuffman,
     DynamicHuffman,
-    DynamicHuffman2,
     RLE_StaticHuffman,
     RLE_StaticBlockHuffman,
     RLE_DynamicHuffman,
-    RLE_DynamicHuffman2,
 };
 
 class CompressorFactory

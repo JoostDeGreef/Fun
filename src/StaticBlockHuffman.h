@@ -19,6 +19,7 @@ protected:
 
     static const size_t blockSize = 128;
     static const size_t initialBlocks = 8;
+    static const size_t maxBlocks = 512;   // limits the memory usage while encoding
     static const double diffTrigger;
 
     StaticBlockHuffmanCommon();

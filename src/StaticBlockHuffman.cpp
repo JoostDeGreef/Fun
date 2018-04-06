@@ -82,7 +82,7 @@ void StaticBlockHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer
                 {
                     diff += abs(m_counts[i] * ratioCount - m_newCounts[i] * ratioNewCount);
                 }
-                if (diff < diffTrigger)
+                if (diff < diffTrigger && m_inBuffer.size() <= maxBlocks * blockSize)
                 {
                     for (size_t i = 0; i < 256; ++i)
                     {

@@ -2,38 +2,9 @@
 #include <array>
 #include <cassert>
 #include <deque>
+#include <string>
 
 #include "DynamicHuffman.h"
-
-DynamicHuffmanCommon::DynamicHuffmanCommon()
-    : HuffmanCommon()
-    , m_buffer()
-    , m_historyIndex(0)
-{
-    BuildTree();
-    m_history.fill(-1);
-}
-
-void DynamicHuffmanCommon::UpdateHistory(unsigned int key)
-{
-    m_counts[key]++;
-    std::swap(m_history[m_historyIndex],key);
-    if (key != static_cast<unsigned int>(-1))
-    {
-        m_counts[key]--;
-        if (m_counts[key] == 0)
-        {
-            m_counts[keyNew]--;
-        }
-    }
-    m_historyIndex++;
-    if (m_historyIndex >= lifetime)
-    {
-        m_historyIndex = 0;
-    }
-    BuildTree();
-}
-
 
 DynamicHuffmanCompressor::DynamicHuffmanCompressor()
     : DynamicHuffmanCommon()
@@ -41,29 +12,34 @@ DynamicHuffmanCompressor::DynamicHuffmanCompressor()
 
 void DynamicHuffmanCompressor::WriteKeyUsingTree(unsigned int key)
 {
-    m_buffer.Push(m_keys[key].bits, static_cast<unsigned int>(m_keys[key].length));
+    Key& k = m_keys[key];
+    if (k.bits.Empty())
+    {
+        k.FillBits();
+    }
+    m_buffer.Push(k.bits);
 }
 
-// todo: also 'count' keyNew
 void DynamicHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer)
 {
     for (size_t i = 0; i < ioBuffer.size(); ++i)
     {
         const auto c = ioBuffer[i];
-        if (m_counts[c] == 0)
+        if (m_keys[c].count == 0)
         {
             WriteKeyUsingTree(keyNew);
             m_buffer.Push(c, 8u);
-            m_counts[keyNew]++;
+            m_keys[keyNew].count++;
+            UpdateTree(c,true);
         }
         else
         {
             WriteKeyUsingTree(c);
+            UpdateTree(c,false);
         }
-        UpdateHistory(c);
     }
     ioBuffer.clear();
-    m_buffer.RetrieveFrontBytes(ioBuffer);        
+    m_buffer.RetrieveFrontBytes(ioBuffer);
 }
 
 void DynamicHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
@@ -87,13 +63,13 @@ void DynamicHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 
 DynamicHuffmanDeCompressor::DynamicHuffmanDeCompressor()
     : DynamicHuffmanCommon()
-    , m_currentNode(&m_tree)
+    , m_currentNode(m_tree)
 {
 }
 
 void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
 {
-    m_buffer.Push(ioBuffer,static_cast<unsigned int>(ioBuffer.size()*8));
+    m_buffer.Push(ioBuffer, static_cast<unsigned int>(ioBuffer.size() * 8));
     ioBuffer.clear();
     bool run = true;
     while (run)
@@ -101,9 +77,9 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
         if (m_currentNode->type == NodeType::branch)
         {
             unsigned int index;
-            if(m_buffer.BitsAvailable()>=m_keys[keyEnd].length)
+            if (m_buffer.BitsAvailable() >= m_keys[keyEnd].bits.Length())
             {
-                for(;m_currentNode->type != NodeType::leaf;)
+                for (; m_currentNode->type != NodeType::leaf;)
                 {
                     index = m_buffer.Pop(1u);
                     m_currentNode = m_currentNode->node[index];
@@ -116,7 +92,7 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
         }
         else
         {
-            switch (m_currentNode->leaf)
+            switch (m_currentNode->key->value)
             {
             case keyNew:
                 run = run && m_buffer.BitsAvailable() >= 8;
@@ -124,18 +100,18 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
                 {
                     unsigned int c = m_buffer.Pop(8u);
                     ioBuffer.emplace_back(static_cast<unsigned char>(c));
-                    assert(m_counts[c] == 0);
-                    m_counts[keyNew]++;
-                    UpdateHistory(c);
-                    m_currentNode = &m_tree;
+                    assert(m_keys[c].count == 0);
+                    m_keys[keyNew].count++;
+                    UpdateTree(c,true);
+                    m_currentNode = m_tree;
                 }
                 break;
             case keyEnd:
                 // see if the filling bits are 0
-                if(m_buffer.BitsAvailable()<8)
+                if (m_buffer.BitsAvailable()<8)
                 {
-                    unsigned int i=m_buffer.Pop(static_cast<unsigned int>(m_buffer.BitsAvailable()));
-                    if(i != 0)
+                    unsigned int i = m_buffer.Pop(static_cast<unsigned int>(m_buffer.BitsAvailable()));
+                    if (i != 0)
                     {
                         throw std::runtime_error("Invalid data");
                     }
@@ -144,10 +120,10 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
                 run = false;
                 break;
             default:
-                ioBuffer.emplace_back(static_cast<unsigned char>(m_currentNode->leaf));
-                assert(m_counts[m_currentNode->leaf] != 0);
-                UpdateHistory(m_currentNode->leaf);
-                m_currentNode = &m_tree;
+                ioBuffer.emplace_back(static_cast<unsigned char>(m_currentNode->key->value));
+                assert(m_keys[m_currentNode->key->value].count != 0);
+                UpdateTree(m_currentNode->key->value,false);
+                m_currentNode = m_tree;
                 break;
             }
         }
@@ -159,7 +135,7 @@ void DynamicHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)
     DeCompress(ioBuffer);
     if (m_buffer.HasData() ||
         m_currentNode->type == NodeType::branch ||
-        m_currentNode->leaf != keyEnd)
+        m_currentNode->key->value != keyEnd)
     {
         throw std::runtime_error("Incomplete data");
     }
