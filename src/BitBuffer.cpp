@@ -32,10 +32,9 @@ void BitBuffer::Clear()
 void BitBuffer::Push(unsigned int data, unsigned int bits)
 {
     assert(bits <= sizeof(data) * 8);
-    assert(m_backBits < 8);
     while (bits > 0)
     {
-        if (m_backBits + bits < 8)
+        if (m_backBits + bits < 32)
         {
             m_backBuffer |= data << m_backBits;
             m_backBits += bits;
@@ -43,15 +42,15 @@ void BitBuffer::Push(unsigned int data, unsigned int bits)
         }
         else if (m_backBits == 0)
         {
-            m_bigBuffer.emplace_back(data & 255);
-            data >>= 8;
-            bits -= 8;
+            m_bigBuffer.emplace_back(data);
+            data >>= 32;
+            bits -= 32;
         }
         else
         {
-            m_backBuffer |= (data << m_backBits) & 255;
-            data >>= 8 - m_backBits;
-            bits -= 8 - m_backBits;
+            m_backBuffer |= (data << m_backBits);
+            data >>= 32 - m_backBits;
+            bits -= 32 - m_backBits;
             m_bigBuffer.emplace_back(m_backBuffer);
             m_backBits = 0;
             m_backBuffer = 0;
@@ -64,7 +63,7 @@ void BitBuffer::Push(const std::vector<unsigned char>& data, unsigned int bits)
     assert(data.size() == (bits + 7) / 8);
     for (unsigned int i = 0; i < bits / 8; ++i)
     {
-        Push(data[i], 8);
+        Push(data[i], 8u);
     }
     bits = bits % 8;
     if (bits != 0)
@@ -73,12 +72,26 @@ void BitBuffer::Push(const std::vector<unsigned char>& data, unsigned int bits)
     }
 }
 
+void BitBuffer::Push(const std::vector<unsigned int>& data, unsigned int bits)
+{
+    assert(data.size() == (bits + 31) / 32);
+    for (unsigned int i = 0; i < bits / 32; ++i)
+    {
+        Push(data[i], 32u);
+    }
+    bits = bits % 32;
+    if (bits != 0)
+    {
+        Push(data.back(), bits);
+    }
+}
+
 void BitBuffer::Push(const BitBuffer& data)
 {
     Push(data.m_frontBuffer, data.m_frontBits);
     for (const auto c : data.m_bigBuffer)
     {
-        Push(c, 8u);
+        Push(c, 32u);
     }
     Push(data.m_backBuffer, data.m_backBits);
 }
@@ -93,7 +106,13 @@ unsigned int BitBuffer::Pop(const unsigned int bits)
 
 bool BitBuffer::TryPop(unsigned int & data, unsigned int bits)
 {
-    static const unsigned int mask[] = {0,1,3,7,15,31,63,127,255,511,1023,2047,4095,8191,16383};
+    static const unsigned int mask[] = 
+    {
+        (1u <<  0) - 1,  (1u <<  1) - 1,  (1u <<  2) - 1,  (1u <<  3) - 1,  (1u <<  4) - 1,  (1u <<  5) - 1,  (1u <<  6) - 1,  (1u <<  7) - 1,
+        (1u <<  8) - 1,  (1u <<  9) - 1,  (1u << 10) - 1,  (1u << 11) - 1,  (1u << 12) - 1,  (1u << 13) - 1,  (1u << 14) - 1,  (1u << 15) - 1,
+        (1u << 16) - 1,  (1u << 17) - 1,  (1u << 18) - 1,  (1u << 19) - 1,  (1u << 20) - 1,  (1u << 21) - 1,  (1u << 22) - 1,  (1u << 23) - 1,
+        (1u << 24) - 1,  (1u << 25) - 1,  (1u << 26) - 1,  (1u << 27) - 1,  (1u << 28) - 1,  (1u << 29) - 1,  (1u << 30) - 1,  (1u << 31) - 1
+    };
     if (bits <= BitsAvailable() )
     {
         unsigned int offset = 0;
@@ -102,7 +121,7 @@ bool BitBuffer::TryPop(unsigned int & data, unsigned int bits)
         // pop from front
         if (bits > 0 && m_frontBits > 0)
         {
-            assert(m_frontBits < 8);
+            assert(m_frontBits < 32);
             if (m_frontBits <= bits)
             {
                 data |= m_frontBuffer & mask[m_frontBits];
@@ -121,20 +140,20 @@ bool BitBuffer::TryPop(unsigned int & data, unsigned int bits)
             }
         }
         // pop from buffer
-        while (bits >= 8 && !m_bigBuffer.empty())
+        while (bits >= 32 && !m_bigBuffer.empty())
         {
             assert(m_frontBits == 0);
             data |= m_bigBuffer.front() << offset;
             m_bigBuffer.pop_front();
-            offset += 8;
-            bits -= 8;
+            offset += 32;
+            bits -= 32;
         }
         if (bits > 0 && !m_bigBuffer.empty())
         {
             assert(m_frontBits == 0);
             data |= (m_bigBuffer.front() & mask[bits]) << offset;
             m_frontBuffer = m_bigBuffer.front() >> bits;
-            m_frontBits = 8 - bits;
+            m_frontBits = 32 - bits;
             m_bigBuffer.pop_front();
             offset += bits;
             bits = 0;
@@ -144,7 +163,7 @@ bool BitBuffer::TryPop(unsigned int & data, unsigned int bits)
         {
             assert(m_frontBits == 0);
             assert(m_bigBuffer.empty());
-            assert(m_backBits < 8);
+            assert(m_backBits < 32);
             data |= (m_backBuffer & mask[bits]) << offset;
             offset += bits;
             m_backBits -= bits;
@@ -167,9 +186,9 @@ void BitBuffer::FlushFront()
         unsigned int backBuffer = m_backBuffer;
         for (auto& buffer : m_bigBuffer)
         {
-            m_frontBuffer |= buffer << m_frontBits;
-            buffer = m_frontBuffer & 255;
-            m_frontBuffer >>= 8;
+            auto temp = m_frontBuffer | (buffer << m_frontBits);
+            m_frontBuffer = buffer >> (32 - m_frontBits);
+            buffer = temp;
         }
         m_backBits = m_frontBits;
         m_backBuffer = m_frontBuffer;
@@ -181,15 +200,15 @@ void BitBuffer::FlushFront()
 
 void BitBuffer::FlushBack()
 {
-    if (m_backBits > 0)
+    if (m_backBits%8 > 0)
     {
-        Push(0, 8-m_backBits);
+        Push(0, 8-(m_backBits%8));
     }
 }
 
 size_t BitBuffer::BitsAvailable() const
 {
-    return m_bigBuffer.size()*8 + m_frontBits + m_backBits;
+    return m_bigBuffer.size()*32 + m_frontBits + m_backBits;
 }
 
 bool BitBuffer::HasData() const
@@ -202,8 +221,7 @@ bool BitBuffer::Empty() const
     return !HasData();
 }
 
-
-void BitBuffer::RetrieveFrontBytes(std::vector<unsigned char>& outBuffer)
+void BitBuffer::RetrieveFrontInts(std::vector<unsigned int>& outBuffer)
 {
     FlushFront();
     if (outBuffer.capacity() < m_bigBuffer.size() + outBuffer.size())
@@ -212,4 +230,27 @@ void BitBuffer::RetrieveFrontBytes(std::vector<unsigned char>& outBuffer)
     }
     outBuffer.insert(outBuffer.end(), m_bigBuffer.begin(), m_bigBuffer.end());
     m_bigBuffer.clear();
+}
+
+void BitBuffer::RetrieveFrontBytes(std::vector<unsigned char>& outBuffer)
+{
+    FlushFront();
+    if (outBuffer.capacity()*4 < m_bigBuffer.size() + outBuffer.size()*4 + m_backBits/8)
+    {
+        outBuffer.reserve(m_bigBuffer.size() + outBuffer.size() + m_backBits/8);
+    }
+    for (const auto data : m_bigBuffer)
+    {
+        outBuffer.emplace_back(static_cast<unsigned char>(data      ));
+        outBuffer.emplace_back(static_cast<unsigned char>(data >>  8));
+        outBuffer.emplace_back(static_cast<unsigned char>(data >> 16));
+        outBuffer.emplace_back(static_cast<unsigned char>(data >> 24));
+    }
+    m_bigBuffer.clear();
+    for (unsigned int i = 0; i < m_backBits / 8; ++i)
+    {
+        outBuffer.emplace_back(static_cast<unsigned char>(m_backBuffer));
+        m_backBuffer >>= 8;
+    }
+    m_backBits = m_backBits % 8;
 }

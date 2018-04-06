@@ -15,6 +15,7 @@ public:
 
     void Push(unsigned int data, unsigned int bits);
     void Push(const std::vector<unsigned char>& data, unsigned int bits);
+    void Push(const std::vector<unsigned int>& data, unsigned int bits);
     void Push(const BitBuffer& data);
 
     unsigned int Pop(const unsigned int bits);
@@ -30,9 +31,10 @@ public:
     
     void Clear();
 
+    void RetrieveFrontInts(std::vector<unsigned int>& outBuffer);
     void RetrieveFrontBytes(std::vector<unsigned char>& outBuffer);
 private:
-    std::deque<unsigned char> m_bigBuffer;
+    std::deque<unsigned int> m_bigBuffer;
     unsigned int m_frontBuffer;
     unsigned int m_frontBits;
     unsigned int m_backBuffer;
