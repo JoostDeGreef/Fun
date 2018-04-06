@@ -15,6 +15,7 @@ public:
 
     void Push(unsigned int data, unsigned int bits);
     void Push(const std::vector<unsigned char>& data, unsigned int bits);
+    void Push(const BitBuffer& data);
 
     unsigned int Pop(const unsigned int bits);
     bool TryPop(unsigned int& data, unsigned int bits);

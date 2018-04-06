@@ -73,6 +73,15 @@ void BitBuffer::Push(const std::vector<unsigned char>& data, unsigned int bits)
     }
 }
 
+void BitBuffer::Push(const BitBuffer& data)
+{
+    Push(data.m_frontBuffer, data.m_frontBits);
+    for (const auto c : data.m_bigBuffer)
+    {
+        Push(c, 8u);
+    }
+    Push(data.m_backBuffer, data.m_backBits);
+}
 
 unsigned int BitBuffer::Pop(const unsigned int bits)
 {

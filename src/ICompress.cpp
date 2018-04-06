@@ -10,6 +10,7 @@
 #include "StaticHuffman.h"
 #include "StaticBlockHuffman.h"
 #include "DynamicHuffman.h"
+#include "DynamicHuffman2.h"
 #include "PipeLine.h"
 
 std::shared_ptr<ICompressor> CompressorFactory::Create(const CompressorType compressorType)
@@ -22,9 +23,11 @@ std::shared_ptr<ICompressor> CompressorFactory::Create(const CompressorType comp
     case CompressorType::StaticHuffman:          return std::make_shared<StaticHuffmanCompressor>();
     case CompressorType::StaticBlockHuffman:     return std::make_shared<StaticBlockHuffmanCompressor>();
     case CompressorType::DynamicHuffman:         return std::make_shared<DynamicHuffmanCompressor>();
+    case CompressorType::DynamicHuffman2:        return std::make_shared<DynamicHuffman2Compressor>();
     case CompressorType::RLE_StaticHuffman:      return std::make_shared<PipeLineCompressor<RLECompressor, StaticHuffmanCompressor>>();
     case CompressorType::RLE_StaticBlockHuffman: return std::make_shared<PipeLineCompressor<RLECompressor, StaticBlockHuffmanCompressor>>();
     case CompressorType::RLE_DynamicHuffman:     return std::make_shared<PipeLineCompressor<RLECompressor, DynamicHuffmanCompressor>>();
+    case CompressorType::RLE_DynamicHuffman2:    return std::make_shared<PipeLineCompressor<RLECompressor, DynamicHuffman2Compressor>>();
     }
     assert(false);
     return std::shared_ptr<ICompressor>();
@@ -40,9 +43,11 @@ std::shared_ptr<IDeCompressor> DeCompressorFactory::Create(const CompressorType 
     case CompressorType::StaticHuffman:          return std::make_shared<StaticHuffmanDeCompressor>();
     case CompressorType::StaticBlockHuffman:     return std::make_shared<StaticBlockHuffmanDeCompressor>();
     case CompressorType::DynamicHuffman:         return std::make_shared<DynamicHuffmanDeCompressor>();
+    case CompressorType::DynamicHuffman2:        return std::make_shared<DynamicHuffman2DeCompressor>();
     case CompressorType::RLE_StaticHuffman:      return std::make_shared<PipeLineDeCompressor<RLEDeCompressor, StaticHuffmanDeCompressor>>();
     case CompressorType::RLE_StaticBlockHuffman: return std::make_shared<PipeLineDeCompressor<RLEDeCompressor, StaticBlockHuffmanDeCompressor>>();
     case CompressorType::RLE_DynamicHuffman:     return std::make_shared<PipeLineDeCompressor<RLEDeCompressor, DynamicHuffmanDeCompressor>>();
+    case CompressorType::RLE_DynamicHuffman2:    return std::make_shared<PipeLineDeCompressor<RLEDeCompressor, DynamicHuffman2DeCompressor>>();
     }
     assert(false);
     return std::shared_ptr<IDeCompressor>();

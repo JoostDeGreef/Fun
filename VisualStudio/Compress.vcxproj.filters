@@ -31,6 +31,9 @@
     <ClCompile Include="..\src\DynamicHuffman.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\DynamicHuffman2.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BitBuffer.h">
@@ -64,6 +67,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\HuffmanCommon.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DynamicHuffman2.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

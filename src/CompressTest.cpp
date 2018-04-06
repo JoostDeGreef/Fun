@@ -121,9 +121,11 @@ protected:
             CompressorType::StaticHuffman,
             CompressorType::StaticBlockHuffman,
             CompressorType::DynamicHuffman,
+            CompressorType::DynamicHuffman2,
             CompressorType::RLE_StaticHuffman,
             CompressorType::RLE_StaticBlockHuffman,
-            CompressorType::RLE_DynamicHuffman
+            CompressorType::RLE_DynamicHuffman,
+            CompressorType::RLE_DynamicHuffman2
         };
     }
 
@@ -168,9 +170,11 @@ inline std::string to_string(CompressorType const& ct)
     case CompressorType::StaticHuffman:          return "StaticHuffman";
     case CompressorType::StaticBlockHuffman:     return "StaticBlockHuffman";
     case CompressorType::DynamicHuffman:         return "DynamicHuffman";
+    case CompressorType::DynamicHuffman2:        return "DynamicHuffman2";
     case CompressorType::RLE_StaticHuffman:      return "RLE_StaticHuffman";
     case CompressorType::RLE_StaticBlockHuffman: return "RLE_StaticBlockHuffman";
     case CompressorType::RLE_DynamicHuffman:     return "RLE_DynamicHuffman";
+    case CompressorType::RLE_DynamicHuffman2:    return "RLE_DynamicHuffman2";
     default:
         assert(false);
         return  "Unknown(" + std::to_string(static_cast<int>(ct)) + ")";
