@@ -1,0 +1,38 @@
+with 32 bit bitbuffer:
+[    DEBUG ]                         Random  Sequence  Sawtooth  Single   Time (ms)
+[    DEBUG ]            PassThrough:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]                    RLE:  107 %     100 %      11 %     1 %   216/220
+[    DEBUG ]                 Window:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]          StaticHuffman:   47 %      37 %      37 %    12 %   1197/1335
+[    DEBUG ]     StaticBlockHuffman:   47 %      36 %      36 %    12 %   1425/1348
+[    DEBUG ]         DynamicHuffman:   45 %      35 %      35 %    12 %   2364/2323
+[    DEBUG ]      RLE_StaticHuffman:   50 %      37 %       6 %     0 %   939/1178
+[    DEBUG ] RLE_StaticBlockHuffman:   51 %      36 %       7 %     0 %   1121/1201
+[    DEBUG ]     RLE_DynamicHuffman:   49 %      35 %       6 %     0 %   2581/2460
+[       OK ] CompressTest.Ratio (21644 ms).
+
+bitbuffer trypop improved:
+[    DEBUG ]                         Random  Sequence  Sawtooth  Single   Time (ms)
+[    DEBUG ]            PassThrough:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]                    RLE:  107 %     100 %      11 %     1 %   248/214
+[    DEBUG ]                 Window:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]          StaticHuffman:   47 %      37 %      37 %    12 %   1198/1226
+[    DEBUG ]     StaticBlockHuffman:   47 %      36 %      36 %    12 %   1407/1196
+[    DEBUG ]         DynamicHuffman:   45 %      35 %      35 %    12 %   2374/2203
+[    DEBUG ]      RLE_StaticHuffman:   50 %      37 %       6 %     0 %   908/994
+[    DEBUG ] RLE_StaticBlockHuffman:   51 %      36 %       7 %     0 %   1095/1174
+[    DEBUG ]     RLE_DynamicHuffman:   49 %      35 %       6 %     0 %   2563/2326
+[       OK ] CompressTest.Ratio (20826 ms).
+
+bitbuffer push improved:
+[    DEBUG ]                         Random  Sequence  Sawtooth  Single   Time (ms)
+[    DEBUG ]            PassThrough:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]                    RLE:  107 %     100 %      11 %     1 %   229/217
+[    DEBUG ]                 Window:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]          StaticHuffman:   47 %      37 %      37 %    12 %   1033/1130
+[    DEBUG ]     StaticBlockHuffman:   47 %      36 %      36 %    12 %   1376/1184
+[    DEBUG ]         DynamicHuffman:   45 %      35 %      35 %    12 %   2309/2212
+[    DEBUG ]      RLE_StaticHuffman:   50 %      37 %       6 %     0 %   808/981
+[    DEBUG ] RLE_StaticBlockHuffman:   51 %      36 %       7 %     0 %   1067/1042
+[    DEBUG ]     RLE_DynamicHuffman:   49 %      35 %       6 %     0 %   1120/1339
+[       OK ] CompressTest.Ratio (17742 ms).

@@ -32,29 +32,18 @@ void BitBuffer::Clear()
 void BitBuffer::Push(unsigned int data, unsigned int bits)
 {
     assert(bits <= sizeof(data) * 8);
-    while (bits > 0)
+    if (m_backBits + bits < 32)
     {
-        if (m_backBits + bits < 32)
-        {
-            m_backBuffer |= data << m_backBits;
-            m_backBits += bits;
-            bits = 0;
-        }
-        else if (m_backBits == 0)
-        {
-            m_bigBuffer.emplace_back(data);
-            data >>= 32;
-            bits -= 32;
-        }
-        else
-        {
-            m_backBuffer |= (data << m_backBits);
-            data >>= 32 - m_backBits;
-            bits -= 32 - m_backBits;
-            m_bigBuffer.emplace_back(m_backBuffer);
-            m_backBits = 0;
-            m_backBuffer = 0;
-        }
+        m_backBuffer |= data << m_backBits;
+        m_backBits += bits;
+        bits = 0;
+    }
+    else
+    {
+        m_backBuffer |= (data << m_backBits);
+        m_bigBuffer.emplace_back(m_backBuffer);
+        m_backBuffer = data >> (32 - m_backBits);
+        m_backBits = bits - (32 - m_backBits);
     }
 }
 
@@ -113,42 +102,32 @@ bool BitBuffer::TryPop(unsigned int & data, unsigned int bits)
         (1u << 16) - 1,  (1u << 17) - 1,  (1u << 18) - 1,  (1u << 19) - 1,  (1u << 20) - 1,  (1u << 21) - 1,  (1u << 22) - 1,  (1u << 23) - 1,
         (1u << 24) - 1,  (1u << 25) - 1,  (1u << 26) - 1,  (1u << 27) - 1,  (1u << 28) - 1,  (1u << 29) - 1,  (1u << 30) - 1,  (1u << 31) - 1
     };
-    if (bits <= BitsAvailable() )
+    unsigned int offset = 0;
+    assert(bits <= sizeof(data) * 8);
+    data = 0;
+    // pop from front if possible
+    assert(m_frontBits < 32);
+    if (bits <= m_frontBits)
     {
-        unsigned int offset = 0;
-        assert(bits <= sizeof(data) * 8);
-        data = 0;
+        data |= m_frontBuffer & mask[bits];
+        m_frontBits -= bits;
+        m_frontBuffer >>= bits;
+        bits = 0;
+        return true;
+    }
+    else if (bits <= BitsAvailable() )
+    {
         // pop from front
-        if (bits > 0 && m_frontBits > 0)
+        if (m_frontBits > 0)
         {
-            assert(m_frontBits < 32);
-            if (m_frontBits <= bits)
-            {
-                data |= m_frontBuffer & mask[m_frontBits];
-                offset += m_frontBits;
-                bits -= m_frontBits;
-                m_frontBits = 0;
-                m_frontBuffer = 0;
-            }
-            else
-            {
-                data |= m_frontBuffer & mask[bits];
-                offset += bits;
-                m_frontBits -= bits;
-                m_frontBuffer >>= bits;
-                bits = 0;
-            }
+            data |= m_frontBuffer & mask[m_frontBits];
+            offset += m_frontBits;
+            bits -= m_frontBits;
+            m_frontBits = 0;
+            m_frontBuffer = 0;
         }
-        // pop from buffer
-        while (bits >= 32 && !m_bigBuffer.empty())
-        {
-            assert(m_frontBits == 0);
-            data |= m_bigBuffer.front() << offset;
-            m_bigBuffer.pop_front();
-            offset += 32;
-            bits -= 32;
-        }
-        if (bits > 0 && !m_bigBuffer.empty())
+        // pop from buffer if possible
+        if (!m_bigBuffer.empty())
         {
             assert(m_frontBits == 0);
             data |= (m_bigBuffer.front() & mask[bits]) << offset;
@@ -158,8 +137,8 @@ bool BitBuffer::TryPop(unsigned int & data, unsigned int bits)
             offset += bits;
             bits = 0;
         }
-        // pop from back
-        if (bits > 0)
+        // pop from back if needed
+        else
         {
             assert(m_frontBits == 0);
             assert(m_bigBuffer.empty());

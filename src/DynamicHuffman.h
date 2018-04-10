@@ -181,25 +181,23 @@ protected:
             }
         }
         // sort nodes, these are all 'key nodes'
-        auto SortKeys = [](Node* a, Node* b)
+        std::sort(m_nodes.begin(), m_nodes.end(), [](Node* a, Node* b)
         {
             assert(a->type == NodeType::leaf);
             assert(b->type == NodeType::leaf);
             return (a->count > b->count) || (a->count == b->count && a->key->value < b->key->value);
-        };
-        std::sort(m_nodes.begin(), m_nodes.end(), SortKeys);
+        });
         // repeatedly join the 2 least important nodes until there is one node left
-        auto CompareNodes = [](Node* a, Node* b)
-        {
-            return a->count >= b->count;
-        };
         Node* node = nullptr;
         for (size_t nodeCount = m_nodes.size(); nodeCount >= 2; --nodeCount)
         {
             assert(m_nodes.size() < m_nodeCache.size());
             node = &m_nodeCache[m_nodes.size()];
             node->SetNodes(m_nodes[nodeCount - 2], m_nodes[nodeCount - 1]);
-            auto iter = std::lower_bound(m_nodes.begin(), m_nodes.begin() + nodeCount - 2, node, CompareNodes);
+            auto iter = std::lower_bound(m_nodes.begin(), m_nodes.begin() + nodeCount - 2, node, [](Node* a, Node* b)
+            {
+                return (a->count > b->count);
+            });
             m_nodes.emplace(iter, node);
         }
         m_tree = node;
