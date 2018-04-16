@@ -134,7 +134,7 @@ protected:
             m_keys[key].count = 1;
             m_keys[key].value = key;
         }
-        m_history.fill(-1);
+        m_history.fill((unsigned int)-1);
         BuildTree();
     }
 

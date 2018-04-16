@@ -1,70 +1,70 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="..\src\ICompress.cpp">
+      <Filter>src\Compress</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\BitBuffer.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Compress\Generic</Filter>
     </ClCompile>
     <ClCompile Include="..\src\BitBufferTest.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Compress\Test</Filter>
     </ClCompile>
     <ClCompile Include="..\src\CompressTest.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ICompress.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\PassThrough.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\RLE.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\StaticHuffman.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Window.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\StaticBlockHuffman.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Compress\Test</Filter>
     </ClCompile>
     <ClCompile Include="..\src\DynamicHuffman.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Compress\Huffman</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\StaticBlockHuffman.cpp">
+      <Filter>src\Compress\Huffman</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\StaticHuffman.cpp">
+      <Filter>src\Compress\Huffman</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PassThrough.cpp">
+      <Filter>src\Compress\PassThrough</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RLE.cpp">
+      <Filter>src\Compress\RLE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Window.cpp">
+      <Filter>src\Compress\Window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\ICompress.h">
+      <Filter>src\Compress</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\BitBuffer.h">
-      <Filter>src</Filter>
+      <Filter>src\Compress\Generic</Filter>
     </ClInclude>
     <ClInclude Include="..\src\CommonTestFunctionality.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ICompress.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\PassThrough.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\RLE.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\StaticHuffman.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Window.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\PipeLine.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\StaticBlockHuffman.h">
-      <Filter>src</Filter>
+      <Filter>src\Compress\Test</Filter>
     </ClInclude>
     <ClInclude Include="..\src\DynamicHuffman.h">
-      <Filter>src</Filter>
+      <Filter>src\Compress\Huffman</Filter>
     </ClInclude>
     <ClInclude Include="..\src\HuffmanCommon.h">
-      <Filter>src</Filter>
+      <Filter>src\Compress\Huffman</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\StaticBlockHuffman.h">
+      <Filter>src\Compress\Huffman</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\StaticHuffman.h">
+      <Filter>src\Compress\Huffman</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PassThrough.h">
+      <Filter>src\Compress\PassThrough</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PipeLine.h">
+      <Filter>src\Compress\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RLE.h">
+      <Filter>src\Compress\RLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Window.h">
+      <Filter>src\Compress\Window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +73,30 @@
     </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{fbd0fd21-2e76-4a8a-837d-06b9f632aa85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compress">
+      <UniqueIdentifier>{a1b3690d-81ea-4f07-b5b4-9a07558586db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compress\Generic">
+      <UniqueIdentifier>{423c617a-53c0-4ace-b194-b09a30277cc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compress\Test">
+      <UniqueIdentifier>{037347c3-7d3a-4b84-9880-5843e65284a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compress\Huffman">
+      <UniqueIdentifier>{034a9067-bdfd-4840-887b-957d01c9969c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compress\PassThrough">
+      <UniqueIdentifier>{fe67f726-af39-408d-983c-0ab25e38f037}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compress\Pipeline">
+      <UniqueIdentifier>{bb0d3455-134a-4dce-b57e-b2c75a914bcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compress\RLE">
+      <UniqueIdentifier>{3d50644d-3e91-4c31-941a-3084bd28a8d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compress\Window">
+      <UniqueIdentifier>{a95d56aa-7f0f-4542-8e96-00acb7492226}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -65,6 +65,7 @@ DynamicHuffmanDeCompressor::DynamicHuffmanDeCompressor()
     : DynamicHuffmanCommon()
     , m_currentNode(m_tree)
 {
+    FillStartNodes();
 }
 
 void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
@@ -72,22 +73,33 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
     m_buffer.Push(ioBuffer, static_cast<unsigned int>(ioBuffer.size() * 8));
     ioBuffer.clear();
     bool run = true;
+    unsigned int index;
+    auto ResetTree = [&index,this](const unsigned int key, const bool forceUpdate)
+    {
+        if (UpdateTree(key, forceUpdate))
+        {
+            FillStartNodes();
+        }
+        if (m_buffer.TryPop(index, m_minKeyLength))
+        {
+            m_currentNode = m_startNodes[index];
+        }
+        else
+        {
+            m_currentNode = m_tree;
+        }
+    };
     while (run)
     {
         if (m_currentNode->type == NodeType::branch)
         {
-            unsigned int index;
-            if (m_buffer.BitsAvailable() >= m_keys[keyEnd].bits.Length())
+            while (run && m_currentNode->type != NodeType::leaf)
             {
-                for (; m_currentNode->type != NodeType::leaf;)
+                run = m_buffer.TryPop(index,1u);
+                if (run)
                 {
-                    index = m_buffer.Pop(1u);
                     m_currentNode = m_currentNode->node[index];
                 }
-            }
-            else
-            {
-                run = false;
             }
         }
         else
@@ -102,8 +114,7 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
                     ioBuffer.emplace_back(static_cast<unsigned char>(c));
                     assert(m_keys[c].count == 0);
                     m_keys[keyNew].count++;
-                    UpdateTree(c,true);
-                    m_currentNode = m_tree;
+                    ResetTree(c,true);
                 }
                 break;
             case keyEnd:
@@ -116,14 +127,17 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
                         throw std::runtime_error("Invalid data");
                     }
                 }
+                else
+                {
+                    throw std::runtime_error("Data after end");
+                }
                 // stop any further actions.
                 run = false;
                 break;
             default:
                 ioBuffer.emplace_back(static_cast<unsigned char>(m_currentNode->key->value));
                 assert(m_keys[m_currentNode->key->value].count != 0);
-                UpdateTree(m_currentNode->key->value,false);
-                m_currentNode = m_tree;
+                ResetTree(m_currentNode->key->value, false);
                 break;
             }
         }
@@ -139,4 +153,52 @@ void DynamicHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)
     {
         throw std::runtime_error("Incomplete data");
     }
+}
+
+void DynamicHuffmanDeCompressor::FillStartNodes()
+{
+    m_minKeyLength = 0;
+    m_startNodes.clear();
+    Nodes nodes0, nodes1;
+    std::vector<unsigned int> bits0, bits1;
+    nodes0.reserve(32);
+    nodes1.reserve(32);
+    bits0.reserve(32);
+    bits1.reserve(32);
+    nodes0.emplace_back(m_tree);
+    bits0.emplace_back(0);
+    bool run = true;
+    while (run)
+    {
+        nodes1.resize(nodes0.size() * 2);
+        bits1.resize(nodes0.size() * 2);
+        for (unsigned int i=0;i<nodes0.size();++i)
+        {
+            Node* node = nodes0[i];
+            unsigned int bits = bits0[i];
+            run = run && (node->node[0]->type != NodeType::leaf) && (node->node[1]->type != NodeType::leaf);
+            nodes1[i*2 + 0] = node->node[0];
+            nodes1[i*2 + 1] = node->node[1];
+            bits1[i*2 + 0] = bits;
+            bits1[i * 2 + 1] = bits | 1 << m_minKeyLength;
+        }
+        m_minKeyLength++;
+        nodes1.swap(nodes0);
+        nodes1.clear();
+        bits1.swap(bits0);
+        bits1.clear();
+    }
+    m_startNodes.resize(nodes0.size());
+    for (unsigned int i = 0; i < nodes0.size(); ++i)
+    {
+        Node* node = nodes0[i];
+        unsigned int bits = bits0[i];
+        m_startNodes[bits] = node;
+    }
+
+
+    //m_minKeyLength = 1;
+    //m_startNodes.clear();
+    //m_startNodes.emplace_back(m_tree->node[0]);
+    //m_startNodes.emplace_back(m_tree->node[1]);
 }

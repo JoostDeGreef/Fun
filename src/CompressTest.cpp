@@ -56,7 +56,7 @@ protected:
                 break;
             case InputType::Sawtooth:
                 {
-                    auto iter = alternating_values.begin();
+                    auto alternating_values_iter = alternating_values.begin();
                     size_t max = 0;
                     size_t cur = 0;
                     while (res.size()<m_size)
@@ -69,28 +69,28 @@ protected:
                                 max = 1;
                             }
                             cur = 0;
-                            ++iter;
-                            if (iter == alternating_values.end())
+                            ++alternating_values_iter;
+                            if (alternating_values_iter == alternating_values.end())
                             {
-                                iter = alternating_values.begin();
+                                alternating_values_iter = alternating_values.begin();
                             }
                         }
                         cur++;
-                        res.emplace_back(*iter);
+                        res.emplace_back(*alternating_values_iter);
                     }
                     break;
                 }
                 case InputType::Sequence:
                 {
-                    auto iter = alternating_values.end();
+                    auto alternating_values_iter = alternating_values.end();
                     while (res.size()<m_size)
                     {
-                        if (iter == alternating_values.end())
+                        if (alternating_values_iter == alternating_values.end())
                         {
-                            iter = alternating_values.begin();
+                            alternating_values_iter = alternating_values.begin();
                         }
-                        res.emplace_back(*iter);
-                        ++iter;
+                        res.emplace_back(*alternating_values_iter);
+                        ++alternating_values_iter;
                     }
                     break;
                 }
@@ -98,7 +98,7 @@ protected:
                 {
                     while (res.size()<m_size)
                     {
-                        res.emplace_back(42);
+                        res.emplace_back((unsigned char)42);
                     }
                     break;
                 }
@@ -121,9 +121,9 @@ protected:
             CompressorType::StaticHuffman,
             CompressorType::StaticBlockHuffman,
             CompressorType::DynamicHuffman,
-            CompressorType::RLE_StaticHuffman,
-            CompressorType::RLE_StaticBlockHuffman,
-            CompressorType::RLE_DynamicHuffman,
+            //CompressorType::RLE_StaticHuffman,
+            //CompressorType::RLE_StaticBlockHuffman,
+            //CompressorType::RLE_DynamicHuffman,
         };
     }
 
@@ -217,6 +217,7 @@ TEST_F(CompressTest, Ratio)
             sw.Reset();
             deCompressor->Finish(deCompressed);
             auto t1 = sw.GetMS();
+            EXPECT_EQ(input.size(), deCompressed.size());
             EXPECT_EQ(input, deCompressed);
             iter->second.emplace(inputType,Data((double)compressed.size() / (double)input.size(), t0, t1));
         }

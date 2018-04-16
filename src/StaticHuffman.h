@@ -2,19 +2,39 @@
 
 #include "BitBuffer.h"
 #include "ICompress.h"
-#include "HuffmanCommon.h"
 
 // bit stream format:
-//   - write table
-//   - write keys
+//   - repeat for each 'blocksize'
+//     - write table
+//     - write keys
 //   - write end
 
-class StaticHuffmanCommon : public HuffmanCommon<257>
+class StaticHuffmanCommon 
 {
 protected:
     static const unsigned int keyEnd = 256;
+    static const unsigned int keyCount = 257;
+    static const unsigned int blockSize = 4096;
 
-    StaticHuffmanCommon();
+    enum class NodeType
+    {
+        branch,
+        leaf
+    };
+    struct Node
+    {
+        NodeType type;
+        uint64_t count;
+        union
+        {
+            Node* node[2];
+            unsigned int key;
+        };
+    };
+    typedef std::array<Node, keyCount * 2> NodeCache;
+    NodeCache m_nodeCache;
+    typedef std::vector<Node*> Nodes;
+    Node* m_tree;
 };
 
 class StaticHuffmanCompressor : public ICompressor, StaticHuffmanCommon
@@ -26,10 +46,24 @@ public:
     void Finish(std::vector<unsigned char>& ioBuffer) override;
 
 private:
+    struct Key
+    {
+        uint64_t count;
+        BitBuffer bits;
+    };
+    typedef std::array<Key, keyCount> Keys;
+    Keys m_keys;
+
+    void ClearKeys();
+    void BuildTree();
+    void CompressBuffer(std::vector<unsigned char>::const_iterator begin, std::vector<unsigned char>::const_iterator end);
+
     void WriteTree(BitBuffer& buffer) const;
     void WriteKeyUsingTree(BitBuffer& buffer, unsigned int key) const;
 
-    std::deque<unsigned char> m_inBuffer;
+    Nodes m_nodes;
+    std::vector<unsigned char> m_inBuffer;
+    BitBuffer m_outBuffer;
 };
 
 class StaticHuffmanDeCompressor : public IDeCompressor, StaticHuffmanCommon
@@ -44,5 +78,6 @@ private:
     bool ReadTree();
     Node* m_currentNode;
     BitBuffer m_inBuffer;
+    unsigned int m_blockCount;
 };
 

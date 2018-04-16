@@ -2,24 +2,82 @@
 #include <array>
 #include <cassert>
 #include <deque>
+#include <string>
 
 #include "StaticHuffman.h"
 
-StaticHuffmanCommon::StaticHuffmanCommon()
-    : HuffmanCommon()
-{
-}
-
 StaticHuffmanCompressor::StaticHuffmanCompressor()
-    : StaticHuffmanCommon()
 {
+    m_nodes.reserve(keyCount);
 }
 
-void StaticHuffmanCompressor::WriteKeyUsingTree(BitBuffer& buffer, unsigned int key) const
+void StaticHuffmanCompressor::ClearKeys()
 {
-    buffer.Push(m_keys[key].bits, static_cast<unsigned int>(m_keys[key].length));
+    for (unsigned int i = 0; i < 256; ++i)
+    {
+        m_keys[i].count = 0;
+    }
+    m_keys[keyEnd].count = 1;
 }
 
+void StaticHuffmanCompressor::BuildTree()
+{
+    m_nodes.clear();
+    // add nodes for all used keys
+    for (unsigned int i = 0; i < keyCount; ++i)
+    {
+        if (m_keys[i].count > 0)
+        {
+            m_keys[i].bits.Clear();
+            m_nodes.emplace_back(&m_nodeCache[m_nodes.size()]);
+            m_nodes.back()->key = i;
+            m_nodes.back()->type = NodeType::leaf;
+        }
+    }
+    // sort nodes, these are all 'key nodes'
+    std::sort(m_nodes.begin(), m_nodes.end(), [](Node* a, Node* b)
+    {
+        assert(a->type == NodeType::leaf);
+        assert(b->type == NodeType::leaf);
+        return (a->count > b->count) || (a->count == b->count && a->key < b->key);
+    });
+    // repeatedly join the 2 least important nodes until there is one node left
+    Node* node = nullptr;
+    for (size_t nodeCount = m_nodes.size(); nodeCount >= 2; --nodeCount)
+    {
+        assert(m_nodes.size() < m_nodeCache.size());
+        node = &m_nodeCache[m_nodes.size()];
+        node->type = NodeType::branch;
+        node->node[0] = m_nodes[nodeCount - 2];
+        node->node[1] = m_nodes[nodeCount - 1];
+        auto iter = std::lower_bound(m_nodes.begin(), m_nodes.begin() + nodeCount - 2, node, [](Node* a, Node* b)
+        {
+            return (a->count > b->count);
+        });
+        m_nodes.emplace(iter, node);
+    }
+    m_tree = node;
+    // fill bits
+    struct LocalFunctions
+    {
+        static void FillBits(Keys& keys, Node* node, unsigned int index, BitBuffer bits)
+        {
+            bits.Push(index, 1u);
+            if (node->type == NodeType::leaf)
+            {
+                keys[node->key].bits.Swap(bits);
+            }
+            else
+            {
+                FillBits(keys, node->node[0], 0, bits);
+                FillBits(keys, node->node[1], 1, bits);
+            }
+        }
+    };
+    BitBuffer bits;
+    LocalFunctions::FillBits(m_keys, m_tree->node[0], 0, bits);
+    LocalFunctions::FillBits(m_keys, m_tree->node[1], 1, bits);
+}
 
 void StaticHuffmanCompressor::WriteTree(BitBuffer& buffer) const
 {
@@ -41,55 +99,93 @@ void StaticHuffmanCompressor::WriteTree(BitBuffer& buffer) const
             else
             {
                 m_buffer.Push(1u, 1u);
-                m_buffer.Push(node.leaf, 9u);
+                m_buffer.Push(node.key, 9u);
             }
         }
     private:
         BitBuffer& m_buffer;
     };
-    Helper(buffer).WriteNode(m_tree);
+    Helper(buffer).WriteNode(*m_tree);
+}
+
+void StaticHuffmanCompressor::WriteKeyUsingTree(BitBuffer& buffer, unsigned int key) const
+{
+    buffer.Push(m_keys[key].bits);
+}
+
+void StaticHuffmanCompressor::CompressBuffer(std::vector<unsigned char>::const_iterator begin, std::vector<unsigned char>::const_iterator end)
+{
+    ClearKeys();
+    for (auto iter = begin; iter!=end; ++iter)
+    {
+        ++m_keys[*iter].count;
+    }
+    BuildTree();
+    WriteTree(m_outBuffer);
+    for (auto iter = begin; iter != end; ++iter)
+    {
+        WriteKeyUsingTree(m_outBuffer,*iter);
+    }
 }
 
 void StaticHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer)
 {
-    for (size_t i = 0; i < ioBuffer.size(); ++i)
+    std::vector<unsigned char>::iterator begin;
+    std::vector<unsigned char>::iterator end;
+    if (!m_inBuffer.empty())
     {
-        const auto c = ioBuffer[i];
-        ++m_counts[c];
-        m_inBuffer.emplace_back(c);
+        if (m_inBuffer.size() + ioBuffer.size() < blockSize)
+        {
+            m_inBuffer.insert(m_inBuffer.end(), ioBuffer.begin(), ioBuffer.end());
+            begin = end = std::end(ioBuffer);
+        }
+        else
+        {
+            begin = std::begin(ioBuffer);
+            end = begin + blockSize - m_inBuffer.size();
+            m_inBuffer.insert(m_inBuffer.end(), begin, end);
+            CompressBuffer(m_inBuffer.begin(), m_inBuffer.end());
+            m_inBuffer.clear();
+        }
+    }
+    else
+    {
+        begin = end = std::begin(ioBuffer);
+    }
+    while (std::distance(end,ioBuffer.end()) >= blockSize)
+    {
+        begin = end;
+        end += blockSize;
+        CompressBuffer(begin, end);
+    }
+    if (end != ioBuffer.end())
+    {
+        m_inBuffer.insert(m_inBuffer.end(), end, ioBuffer.end());
     }
     ioBuffer.clear();
+    m_outBuffer.RetrieveFrontBytes(ioBuffer);
 }
 
 void StaticHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 {
-    BitBuffer buffer;
-
     Compress(ioBuffer);
-
-    BuildTree();
-    WriteTree(buffer);
 
     if (!m_inBuffer.empty())
     {
-        for(const auto c: m_inBuffer)
-        {
-            WriteKeyUsingTree(buffer,c);
-        }
+        CompressBuffer(m_inBuffer.cbegin(), m_inBuffer.cend());
     }
 
-    WriteKeyUsingTree(buffer,keyEnd);
-
-    buffer.FlushBack();
-    buffer.RetrieveFrontBytes(ioBuffer);
+    WriteKeyUsingTree(m_outBuffer,keyEnd);
+    m_outBuffer.FlushBack();
+    m_outBuffer.RetrieveFrontBytes(ioBuffer);
 }
 
 
 
 StaticHuffmanDeCompressor::StaticHuffmanDeCompressor()
-    : StaticHuffmanCommon()
-    , m_currentNode(nullptr)
+    : m_currentNode(nullptr)
     , m_inBuffer()
+    , m_blockCount(0)
 {
 }
 
@@ -100,22 +196,26 @@ bool StaticHuffmanDeCompressor::ReadTree()
     {
     public:
         Helper(BitBuffer& buffer,
-               std::array<Node, (256 + 1) * 2>& treeCache,
-               std::array<Key, 256 + 1>& keys)
+               NodeCache& nodeCache)
             : m_index(0)
             , m_buffer(buffer)
-            , m_treeCache(treeCache)
-            , m_keys(keys)
+            , m_nodeCache(nodeCache)
         {}
 
+        Node* ReadTree()
+        {
+            return ReadNode();
+        }
+    private:
         Node* ReadNode()
         {
             if (m_buffer.BitsAvailable() < 10)
             {
                 return nullptr;
             }
-            Node& node = m_treeCache[m_index];
+            Node& node = m_nodeCache[m_index];
             ++m_index;
+            node.count = 0;
             node.type = m_buffer.Pop(1u) == 0 ? NodeType::branch : NodeType::leaf;
             if (node.type == NodeType::branch)
             {
@@ -127,66 +227,30 @@ bool StaticHuffmanDeCompressor::ReadTree()
             }
             else
             {
-                node.leaf = m_buffer.Pop(9u);
+                node.key = m_buffer.Pop(9u);
             }
             return &node;
         }
 
-        void ClearKeys()
-        {
-            unsigned int value = 0;
-            for (auto& key : m_keys)
-            {
-                key.bits.clear();
-                key.value = value++;
-                key.length = 0;
-            }
-        }
-
-        void BuildKeys()
-        {
-            AddNodeToKey(m_treeCache[0].node[0], 0, BitBuffer());
-            AddNodeToKey(m_treeCache[0].node[1], 1, BitBuffer());
-        }
     private:
-        void AddNodeToKey(Node* node, unsigned int index, BitBuffer bits)
-        {
-            bits.Push(index, 1u);
-            if (node->type == NodeType::branch)
-            {
-                AddNodeToKey(node->node[0], 0, BitBuffer());
-                AddNodeToKey(node->node[1], 1, BitBuffer());
-            }
-            else
-            {
-                m_keys[node->leaf].length = bits.BitsAvailable();
-                bits.FlushBack();
-                bits.RetrieveFrontBytes(m_keys[node->leaf].bits);
-            }
-        }
         unsigned int m_index = 0;
         BitBuffer& m_buffer;
-        std::array<Node, (256 + 1) * 2>& m_treeCache;
-        std::array<Key, 256 + 1>& m_keys;
+        NodeCache& m_nodeCache;
     };
-    if (m_inBuffer.BitsAvailable() >= (256 + 1) * 2)
+    if (m_inBuffer.BitsAvailable() >= keyCount * 2)
     {
-        Helper helper(m_inBuffer, m_treeCache, m_keys);
-        if (nullptr != helper.ReadNode())
+        Helper helper(m_inBuffer, m_nodeCache);
+        if (nullptr != (m_tree = helper.ReadTree()))
         {
-            helper.ClearKeys();
-            helper.BuildKeys();
             return true;
         }
     }
     else
     {
         BitBuffer tempBuffer(m_inBuffer);
-        Helper helper(tempBuffer, m_treeCache, m_keys);
-        if (nullptr != helper.ReadNode())
+        Helper helper(tempBuffer, m_nodeCache);
+        if (nullptr != (m_tree = helper.ReadTree()))
         {
-            helper.ClearKeys();
-            helper.BuildKeys();
             tempBuffer.Swap(m_inBuffer);
             return true;
         }
@@ -204,7 +268,8 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
         run = run && ReadTree();
         if (run)
         {
-            m_currentNode = &m_tree;
+            m_currentNode = m_tree;
+            assert(nullptr != m_currentNode);
         }
     }
     while (run)
@@ -212,39 +277,46 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
         if (m_currentNode->type == NodeType::branch)
         {
             unsigned int index;
-            if(m_inBuffer.BitsAvailable()>=m_keys[keyEnd].length)
+            while(run && m_currentNode->type != NodeType::leaf)
             {
-                for(;m_currentNode->type != NodeType::leaf;)
+                run = m_inBuffer.TryPop(index,1u);
+                if (run)
                 {
-                    index = m_inBuffer.Pop(1u);
                     m_currentNode = m_currentNode->node[index];
                 }
-            }
-            else
-            {
-                run = false;
             }
         }
         else
         {
-            switch (m_currentNode->leaf)
+            switch (m_currentNode->key)
             {
             case keyEnd:
                 // see if the filling bits are 0
-                if(m_inBuffer.BitsAvailable()<8)
+                if (m_inBuffer.BitsAvailable() < 8)
                 {
-                    unsigned int i=m_inBuffer.Pop(static_cast<unsigned int>(m_inBuffer.BitsAvailable()));
-                    if(i != 0)
+                    unsigned int i = m_inBuffer.Pop(static_cast<unsigned int>(m_inBuffer.BitsAvailable()));
+                    if (i != 0)
                     {
                         throw std::runtime_error("Invalid data");
                     }
+                }
+                else
+                {
+                    throw std::runtime_error("Data after end");
                 }
                 // stop any further actions.
                 run = false;
                 break;
             default:
-                ioBuffer.emplace_back(static_cast<unsigned char>(m_currentNode->leaf));
-                m_currentNode = &m_tree;
+                ioBuffer.emplace_back(static_cast<unsigned char>(m_currentNode->key));
+                m_blockCount++;
+                if (m_blockCount >= blockSize)
+                {
+                    m_currentNode = nullptr;
+                    m_blockCount = 0;
+                    run = run && ReadTree();
+                }
+                m_currentNode = m_tree;
                 break;
             }
         }
@@ -255,8 +327,7 @@ void StaticHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 {
     DeCompress(ioBuffer);
     if (m_inBuffer.HasData() ||
-        m_currentNode->type == NodeType::branch ||
-        m_currentNode->leaf != keyEnd)
+        (m_currentNode != nullptr && (m_currentNode->type == NodeType::branch || m_currentNode->key != keyEnd)))
     {
         throw std::runtime_error("Incomplete data");
     }

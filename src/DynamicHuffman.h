@@ -135,7 +135,7 @@ protected:
         return m_nodes.back();
     }
 
-    void UpdateTree(unsigned int key, const bool forceUpdate)
+    bool UpdateTree(unsigned int key, const bool forceUpdate)
     {
         auto NodeOrderBroken = [](Node* node)
         {
@@ -164,7 +164,9 @@ protected:
             //   - see if the rebuild can be avoided completely?
             //   - perform a partial tree rebuild only?
             BuildTree();
+            return true;
         }
+        return false;
     }
 
     void BuildTree()
@@ -188,31 +190,35 @@ protected:
             return (a->count > b->count) || (a->count == b->count && a->key->value < b->key->value);
         });
         // repeatedly join the 2 least important nodes until there is one node left
-        Node* node = nullptr;
-        for (size_t nodeCount = m_nodes.size(); nodeCount >= 2; --nodeCount)
         {
-            assert(m_nodes.size() < m_nodeCache.size());
-            node = &m_nodeCache[m_nodes.size()];
-            node->SetNodes(m_nodes[nodeCount - 2], m_nodes[nodeCount - 1]);
-            auto iter = std::lower_bound(m_nodes.begin(), m_nodes.begin() + nodeCount - 2, node, [](Node* a, Node* b)
+            Node* node = nullptr;
+            for (size_t nodeCount = m_nodes.size(); nodeCount >= 2; --nodeCount)
             {
-                return (a->count > b->count);
-            });
-            m_nodes.emplace(iter, node);
-        }
-        m_tree = node;
-        // fill before/after
-        Node* prev = nullptr;
-        for (auto& node : m_nodes)
-        {
-            node->before = prev;
-            if (nullptr != prev)
-            {
-                prev->after = node;
+                assert(m_nodes.size() < m_nodeCache.size());
+                node = &m_nodeCache[m_nodes.size()];
+                node->SetNodes(m_nodes[nodeCount - 2], m_nodes[nodeCount - 1]);
+                auto iter = std::lower_bound(m_nodes.begin(), m_nodes.begin() + nodeCount - 2, node, [](Node* a, Node* b)
+                {
+                    return (a->count > b->count);
+                });
+                m_nodes.emplace(iter, node);
             }
-            prev = node;
+            m_tree = node;
         }
-        prev->after = nullptr;
+        // fill before/after
+        {
+            Node* prev = nullptr;
+            for (auto& node : m_nodes)
+            {
+                node->before = prev;
+                if (nullptr != prev)
+                {
+                    prev->after = node;
+                }
+                prev = node;
+            }
+            prev->after = nullptr;
+        }
     }
 };
 
@@ -237,6 +243,10 @@ public:
     void Finish(std::vector<unsigned char>& ioBuffer) override;
 
 private:
+    void FillStartNodes();
+
+    Nodes m_startNodes;
+    unsigned int m_minKeyLength;
     Node * m_currentNode;
 };
 
