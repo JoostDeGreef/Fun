@@ -20,6 +20,7 @@ protected:
     static const size_t blockSize = 128;
     static const size_t initialBlocks = 8;
     static const size_t maxBlocks = 512;   // limits the memory usage while encoding
+    static const unsigned int startNodeBits = 4;
     static const double diffTrigger;
 
     StaticBlockHuffmanCommon();
@@ -53,6 +54,9 @@ public:
 
 private:
     bool ReadTree();
+    void FillStartNodes();
+
+    Nodes m_startNodes;
     Node* m_currentNode;
 };
 

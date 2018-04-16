@@ -242,6 +242,7 @@ bool StaticHuffmanDeCompressor::ReadTree()
         Helper helper(m_inBuffer, m_nodeCache);
         if (nullptr != (m_tree = helper.ReadTree()))
         {
+            FillStartNodes();
             return true;
         }
     }
@@ -252,6 +253,7 @@ bool StaticHuffmanDeCompressor::ReadTree()
         if (nullptr != (m_tree = helper.ReadTree()))
         {
             tempBuffer.Swap(m_inBuffer);
+            FillStartNodes();
             return true;
         }
     }
@@ -316,7 +318,23 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
                     m_blockCount = 0;
                     run = run && ReadTree();
                 }
-                m_currentNode = m_tree;
+                if (run)
+                {
+                    unsigned int index;
+                    if (m_inBuffer.TryPeek(index, startNodeBits))
+                    {
+                        m_currentNode = m_startNodes[index];
+                        m_inBuffer.Pop(m_currentNode->depth);
+                    }
+                    else
+                    {
+                        m_currentNode = m_tree;
+                    }
+                }
+                else
+                {
+                    m_currentNode = m_tree;
+                }
                 break;
             }
         }
@@ -332,3 +350,58 @@ void StaticHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)
         throw std::runtime_error("Incomplete data");
     }
 }
+
+void StaticHuffmanDeCompressor::FillStartNodes()
+{
+    // todo: turn this into a recursive template
+    class Helper
+    {
+    public:
+        inline
+            static void Fill(Nodes& nodes, Node* tree)
+        {
+            FillBranch(nodes, tree->node[0], 0, 1);
+            FillBranch(nodes, tree->node[1], 1, 1);
+        }
+    private:
+        inline
+            static void FillBranch(Nodes& nodes, Node* node, const unsigned int index, const unsigned int depth)
+        {
+            if (depth < startNodeBits)
+            {
+                if (node->type == NodeType::branch)
+                {
+                    FillBranch(nodes, node->node[0], index, depth + 1);
+                    FillBranch(nodes, node->node[1], index | 1 << depth, depth + 1);
+                }
+                else
+                {
+                    node->depth = depth;
+                    FillLeaf(nodes, node, index, depth + 1);
+                    FillLeaf(nodes, node, index | 1 << depth, depth + 1);
+                }
+            }
+            else
+            {
+                node->depth = depth;
+                nodes[index] = node;
+            }
+        }
+        inline
+            static void FillLeaf(Nodes& nodes, Node* node, const unsigned int index, const unsigned int depth)
+        {
+            if (depth < startNodeBits)
+            {
+                FillLeaf(nodes, node, index, depth + 1);
+                FillLeaf(nodes, node, index | 1 << depth, depth + 1);
+            }
+            else
+            {
+                nodes[index] = node;
+            }
+        }
+    };
+    m_startNodes.resize(1 << startNodeBits, nullptr);
+    Helper::Fill(m_startNodes, m_tree);
+}
+

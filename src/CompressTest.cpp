@@ -121,9 +121,9 @@ protected:
             CompressorType::StaticHuffman,
             CompressorType::StaticBlockHuffman,
             CompressorType::DynamicHuffman,
-            //CompressorType::RLE_StaticHuffman,
-            //CompressorType::RLE_StaticBlockHuffman,
-            //CompressorType::RLE_DynamicHuffman,
+            CompressorType::RLE_StaticHuffman,
+            CompressorType::RLE_StaticBlockHuffman,
+            CompressorType::RLE_DynamicHuffman,
         };
     }
 

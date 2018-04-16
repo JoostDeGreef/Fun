@@ -18,6 +18,7 @@ protected:
     static const unsigned int keyEnd = 257;
 
     static const unsigned int keyCount = 258;
+    static const unsigned int startNodeBits = 4;
 
     // input/output buffer
     BitBuffer m_buffer;
@@ -70,6 +71,7 @@ protected:
     {
         NodeType type;
         unsigned int count;
+        unsigned int depth;
         Node* parent;
         Node* before;
         Node* after;
@@ -246,7 +248,6 @@ private:
     void FillStartNodes();
 
     Nodes m_startNodes;
-    unsigned int m_minKeyLength;
     Node * m_currentNode;
 };
 

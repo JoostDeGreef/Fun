@@ -233,6 +233,7 @@ bool StaticBlockHuffmanDeCompressor::ReadTree()
         {
             helper.ClearKeys();
             helper.BuildKeys();
+            FillStartNodes();
             return true;
         }
     }
@@ -245,6 +246,7 @@ bool StaticBlockHuffmanDeCompressor::ReadTree()
             helper.ClearKeys();
             helper.BuildKeys();
             tempBuffer.Swap(m_buffer);
+            FillStartNodes();
             return true;
         }
     }
@@ -282,7 +284,23 @@ void StaticBlockHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBu
                 run = run && ReadTree();
                 if (run)
                 {
-                    m_currentNode = &m_tree;
+                    if (run)
+                    {
+                        unsigned int index;
+                        if (m_buffer.TryPeek(index, startNodeBits))
+                        {
+                            m_currentNode = m_startNodes[index];
+                            m_buffer.Pop(m_currentNode->depth);
+                        }
+                        else
+                        {
+                            m_currentNode = &m_tree;
+                        }
+                    }
+                    else
+                    {
+                        m_currentNode = &m_tree;
+                    }
                 }
                 break;
             case keyEnd:
@@ -300,7 +318,18 @@ void StaticBlockHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBu
                 break;
             default:
                 ioBuffer.emplace_back(static_cast<unsigned char>(m_currentNode->leaf));
-                m_currentNode = &m_tree;
+                {
+                    unsigned int index;
+                    if (m_buffer.TryPeek(index, startNodeBits))
+                    {
+                        m_currentNode = m_startNodes[index];
+                        m_buffer.Pop(m_currentNode->depth);
+                    }
+                    else
+                    {
+                        m_currentNode = &m_tree;
+                    }
+                }
                 break;
             }
         }
@@ -317,3 +346,58 @@ void StaticBlockHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer
         throw std::runtime_error("Incomplete data");
     }
 }
+
+void StaticBlockHuffmanDeCompressor::FillStartNodes()
+{
+    // todo: turn this into a recursive template
+    class Helper
+    {
+    public:
+        inline
+            static void Fill(Nodes& nodes, Node* tree)
+        {
+            FillBranch(nodes, tree->node[0], 0, 1);
+            FillBranch(nodes, tree->node[1], 1, 1);
+        }
+    private:
+        inline
+            static void FillBranch(Nodes& nodes, Node* node, const unsigned int index, const unsigned int depth)
+        {
+            if (depth < startNodeBits)
+            {
+                if (node->type == NodeType::branch)
+                {
+                    FillBranch(nodes, node->node[0], index, depth + 1);
+                    FillBranch(nodes, node->node[1], index | 1 << depth, depth + 1);
+                }
+                else
+                {
+                    node->depth = depth;
+                    FillLeaf(nodes, node, index, depth + 1);
+                    FillLeaf(nodes, node, index | 1 << depth, depth + 1);
+                }
+            }
+            else
+            {
+                node->depth = depth;
+                nodes[index] = node;
+            }
+        }
+        inline
+            static void FillLeaf(Nodes& nodes, Node* node, const unsigned int index, const unsigned int depth)
+        {
+            if (depth < startNodeBits)
+            {
+                FillLeaf(nodes, node, index, depth + 1);
+                FillLeaf(nodes, node, index | 1 << depth, depth + 1);
+            }
+            else
+            {
+                nodes[index] = node;
+            }
+        }
+    };
+    m_startNodes.resize(1 << startNodeBits, nullptr);
+    Helper::Fill(m_startNodes, &m_tree);
+}
+

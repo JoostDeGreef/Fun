@@ -46,6 +46,7 @@ protected:
     struct Node
     {
         NodeType type;
+        unsigned int depth;
         union
         {
             Node* node[2];
@@ -55,6 +56,7 @@ protected:
     typedef std::array<Node, m_keyCount * 2> TreeCache;
     TreeCache m_treeCache;
     Node& m_tree;
+    typedef std::vector<Node*> Nodes;
 
     void BuildTree()
     {

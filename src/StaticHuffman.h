@@ -14,7 +14,8 @@ class StaticHuffmanCommon
 protected:
     static const unsigned int keyEnd = 256;
     static const unsigned int keyCount = 257;
-    static const unsigned int blockSize = 4096;
+    static const unsigned int blockSize = 16384;
+    static const unsigned int startNodeBits = 4;
 
     enum class NodeType
     {
@@ -24,7 +25,8 @@ protected:
     struct Node
     {
         NodeType type;
-        uint64_t count;
+        unsigned int count;
+        unsigned int depth;
         union
         {
             Node* node[2];
@@ -76,6 +78,9 @@ public:
 
 private:
     bool ReadTree();
+    void FillStartNodes();
+
+    Nodes m_startNodes;
     Node* m_currentNode;
     BitBuffer m_inBuffer;
     unsigned int m_blockCount;

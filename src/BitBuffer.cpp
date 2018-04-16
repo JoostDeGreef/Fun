@@ -3,6 +3,18 @@
 
 #include "BitBuffer.h"
 
+namespace
+{
+    // mask used by TryPop and TryPeek
+    static const unsigned int mask[] =
+    {
+        (1u <<  0) - 1,  (1u <<  1) - 1,  (1u <<  2) - 1,  (1u <<  3) - 1,  (1u <<  4) - 1,  (1u <<  5) - 1,  (1u <<  6) - 1,  (1u <<  7) - 1,
+        (1u <<  8) - 1,  (1u <<  9) - 1,  (1u << 10) - 1,  (1u << 11) - 1,  (1u << 12) - 1,  (1u << 13) - 1,  (1u << 14) - 1,  (1u << 15) - 1,
+        (1u << 16) - 1,  (1u << 17) - 1,  (1u << 18) - 1,  (1u << 19) - 1,  (1u << 20) - 1,  (1u << 21) - 1,  (1u << 22) - 1,  (1u << 23) - 1,
+        (1u << 24) - 1,  (1u << 25) - 1,  (1u << 26) - 1,  (1u << 27) - 1,  (1u << 28) - 1,  (1u << 29) - 1,  (1u << 30) - 1,  (1u << 31) - 1
+    };
+}
+
 BitBuffer::BitBuffer()
     : m_bigBuffer()
     , m_frontBuffer(0)
@@ -95,13 +107,6 @@ unsigned int BitBuffer::Pop(const unsigned int bits)
 
 bool BitBuffer::TryPop(unsigned int & data, unsigned int bits)
 {
-    static const unsigned int mask[] = 
-    {
-        (1u <<  0) - 1,  (1u <<  1) - 1,  (1u <<  2) - 1,  (1u <<  3) - 1,  (1u <<  4) - 1,  (1u <<  5) - 1,  (1u <<  6) - 1,  (1u <<  7) - 1,
-        (1u <<  8) - 1,  (1u <<  9) - 1,  (1u << 10) - 1,  (1u << 11) - 1,  (1u << 12) - 1,  (1u << 13) - 1,  (1u << 14) - 1,  (1u << 15) - 1,
-        (1u << 16) - 1,  (1u << 17) - 1,  (1u << 18) - 1,  (1u << 19) - 1,  (1u << 20) - 1,  (1u << 21) - 1,  (1u << 22) - 1,  (1u << 23) - 1,
-        (1u << 24) - 1,  (1u << 25) - 1,  (1u << 26) - 1,  (1u << 27) - 1,  (1u << 28) - 1,  (1u << 29) - 1,  (1u << 30) - 1,  (1u << 31) - 1
-    };
     unsigned int offset = 0;
     assert(bits <= sizeof(data) * 8);
     data = 0;
@@ -148,6 +153,53 @@ bool BitBuffer::TryPop(unsigned int & data, unsigned int bits)
             m_backBits -= bits;
             m_backBuffer >>= bits;
             bits = 0;
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+unsigned int BitBuffer::Peek(const unsigned int bits)
+{
+    unsigned int data = 0;
+    bool res = TryPeek(data, bits);
+    assert(res);
+    return data;
+}
+
+bool BitBuffer::TryPeek(unsigned int& data, unsigned int bits)
+{
+    unsigned int offset = 0;
+    assert(bits <= sizeof(data) * 8);
+    data = 0;
+    // peek completely from front if possible
+    assert(m_frontBits < 32);
+    if (bits <= m_frontBits)
+    {
+        data |= m_frontBuffer & mask[bits];
+        return true;
+    }
+    else if (bits <= BitsAvailable())
+    {
+        // peek from front
+        if (m_frontBits > 0)
+        {
+            data |= m_frontBuffer & mask[m_frontBits];
+            offset += m_frontBits;
+            bits -= m_frontBits;
+        }
+        // peek from buffer if possible
+        if (!m_bigBuffer.empty())
+        {
+            data |= (m_bigBuffer.front() & mask[bits]) << offset;
+        }
+        // peek from back if buffer empty
+        else
+        {
+            data |= (m_backBuffer & mask[bits]) << offset;
         }
         return true;
     }

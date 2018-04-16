@@ -20,7 +20,10 @@ public:
 
     unsigned int Pop(const unsigned int bits);
     bool TryPop(unsigned int& data, unsigned int bits);
-    
+
+    unsigned int Peek(const unsigned int bits);
+    bool TryPeek(unsigned int& data, unsigned int bits);
+
     void FlushFront(); // make sure the buffer starts at a whole byte
     void FlushBack(); // fill the buffer with 0 so it ends on a whole byte
 
