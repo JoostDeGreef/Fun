@@ -168,8 +168,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\BitBuffer.cpp" />
-    <ClCompile Include="..\src\BitBufferTest.cpp" />
+    <ClCompile Include="..\src\BitFiFo.cpp" />
+    <ClCompile Include="..\src\BitFiFoTest.cpp" />
     <ClCompile Include="..\src\CompressTest.cpp" />
     <ClCompile Include="..\src\DynamicHuffman.cpp" />
     <ClCompile Include="..\src\ICompress.cpp" />
@@ -180,7 +180,7 @@
     <ClCompile Include="..\src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\BitBuffer.h" />
+    <ClInclude Include="..\src\BitFiFo.h" />
     <ClInclude Include="..\src\CommonTestFunctionality.h" />
     <ClInclude Include="..\src\DynamicHuffman.h" />
     <ClInclude Include="..\src\HuffmanCommon.h" />

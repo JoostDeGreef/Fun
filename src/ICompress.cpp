@@ -10,7 +10,6 @@
 #include "StaticHuffman.h"
 #include "StaticBlockHuffman.h"
 #include "DynamicHuffman.h"
-#include "DynamicHuffman2.h"
 #include "PipeLine.h"
 
 std::shared_ptr<ICompressor> CompressorFactory::Create(const CompressorType compressorType)

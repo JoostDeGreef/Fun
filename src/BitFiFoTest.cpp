@@ -1,8 +1,8 @@
 #include "CommonTestFunctionality.h"
 
-#include "BitBuffer.h"
+#include "BitFiFO.h"
 
-class BitBufferTest : public Test
+class BitFiFoTest : public Test
 {
 protected:
     virtual void SetUp()
@@ -14,42 +14,42 @@ protected:
     }
 };
 
-TEST_F(BitBufferTest, PushTryPopPopBackOnly)
+TEST_F(BitFiFoTest, PushTryPopPopBackOnly)
 {
-    BitBuffer bb;
+    BitFiFo bb;
     unsigned int data;
     bb.Push(2, 2);
-    EXPECT_EQ(2ul, bb.BitsAvailable());
+    EXPECT_EQ(2ul, bb.Size());
     EXPECT_FALSE(bb.TryPop(data, 3));
     EXPECT_TRUE(bb.TryPop(data, 1));
     EXPECT_EQ(0u, data);
-    EXPECT_EQ(1ul, bb.BitsAvailable());
+    EXPECT_EQ(1ul, bb.Size());
     data = bb.Pop(1);
     EXPECT_EQ(1u, data);
-    EXPECT_EQ(0ul, bb.BitsAvailable());
+    EXPECT_EQ(0ul, bb.Size());
 }
 
-TEST_F(BitBufferTest, PushTryPopPopBuffered)
+TEST_F(BitFiFoTest, PushTryPopPopBuffered)
 {
-    BitBuffer bb;
+    BitFiFo bb;
     unsigned int data;
     bb.Push(2, 2);
-    EXPECT_EQ(2ul, bb.BitsAvailable());
+    EXPECT_EQ(2ul, bb.Size());
     EXPECT_FALSE(bb.TryPop(data, 3));
     bb.Push(42, 8);
     EXPECT_TRUE(bb.TryPop(data, 1));
     EXPECT_EQ(0u, data);
-    EXPECT_EQ(9ul, bb.BitsAvailable());
+    EXPECT_EQ(9ul, bb.Size());
     data = bb.Pop(1);
     EXPECT_EQ(1u, data);
-    EXPECT_EQ(8ul, bb.BitsAvailable());
+    EXPECT_EQ(8ul, bb.Size());
     data = bb.Pop(8);
     EXPECT_EQ(42u, data);
 }
 
-TEST_F(BitBufferTest, PushTryPopPopMany)
+TEST_F(BitFiFoTest, PushTryPopPopMany)
 {
-    BitBuffer bb;
+    BitFiFo bb;
     unsigned int data;
     static const std::vector<std::pair<unsigned int, unsigned int>> input = { {1,1},{34,6},{123,7},{127,8},{5,4} };
     for (const auto& i : input)
@@ -61,12 +61,12 @@ TEST_F(BitBufferTest, PushTryPopPopMany)
         data = bb.Pop(i.second);
         EXPECT_EQ(i.first,data);
     }
-    EXPECT_EQ(0ul, bb.BitsAvailable());
+    EXPECT_EQ(0ul, bb.Size());
 }
 
-TEST_F(BitBufferTest, FlushRetrieve)
+TEST_F(BitFiFoTest, FlushRetrieve)
 {
-    BitBuffer bits;
+    BitFiFo bits;
     std::vector<unsigned char> out;
     for(int i=0;i<100;++i)
     {
@@ -74,9 +74,8 @@ TEST_F(BitBufferTest, FlushRetrieve)
         {
             bits.Push(1u,1u);
         }
-        size_t count = bits.BitsAvailable();
-        bits.FlushBack();
-        bits.RetrieveFrontBytes(out);
+        size_t count = bits.Size();
+        bits.Pop(out,true);
         EXPECT_LE(count,out.size()*8);
         bits.Clear();
         out.clear();

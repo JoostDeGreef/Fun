@@ -39,7 +39,7 @@ void DynamicHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer)
         }
     }
     ioBuffer.clear();
-    m_buffer.RetrieveFrontBytes(ioBuffer);
+    m_buffer.Pop(ioBuffer);
 }
 
 void DynamicHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
@@ -48,15 +48,14 @@ void DynamicHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 
     WriteKeyUsingTree(keyEnd);
 
-    m_buffer.FlushBack();
     if (ioBuffer.empty())
     {
-        m_buffer.RetrieveFrontBytes(ioBuffer);
+        m_buffer.Pop(ioBuffer,true);
     }
     else
     {
         std::vector<unsigned char> temp;
-        m_buffer.RetrieveFrontBytes(temp);
+        m_buffer.Pop(temp,true);
         ioBuffer.insert(ioBuffer.end(), temp.begin(), temp.end());
     }
 }
@@ -108,7 +107,7 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
             switch (m_currentNode->key->value)
             {
             case keyNew:
-                run = run && m_buffer.BitsAvailable() >= 8;
+                run = run && m_buffer.Size() >= 8;
                 if (run)
                 {
                     unsigned int c = m_buffer.Pop(8u);
@@ -120,9 +119,9 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
                 break;
             case keyEnd:
                 // see if the filling bits are 0
-                if (m_buffer.BitsAvailable()<8)
+                if (m_buffer.Size()<8)
                 {
-                    unsigned int i = m_buffer.Pop(static_cast<unsigned int>(m_buffer.BitsAvailable()));
+                    unsigned int i = m_buffer.Pop(static_cast<unsigned int>(m_buffer.Size()));
                     if (i != 0)
                     {
                         throw std::runtime_error("Invalid data");
@@ -148,7 +147,7 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
 void DynamicHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 {
     DeCompress(ioBuffer);
-    if (m_buffer.HasData() ||
+    if (!m_buffer.Empty() ||
         m_currentNode->type == NodeType::branch ||
         m_currentNode->key->value != keyEnd)
     {

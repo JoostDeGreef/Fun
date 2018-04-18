@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BitBuffer.h"
+#include "BitFiFo.h"
 #include "ICompress.h"
 
 // bit stream format:
@@ -21,16 +21,16 @@ protected:
     static const unsigned int startNodeBits = 4;
 
     // input/output buffer
-    BitBuffer m_buffer;
+    BitFiFo m_buffer;
 
-    class KeyBits : public BitBuffer
+    class KeyBits : public BitFiFo
     {
     public:
         size_t Length() const
         {
-            return BitBuffer::BitsAvailable();
+            return BitFiFo::Size();
         }
-        operator BitBuffer() const
+        operator BitFiFo() const
         {
             return *this;
         }

@@ -60,7 +60,7 @@ void StaticHuffmanCompressor::BuildTree()
     // fill bits
     struct LocalFunctions
     {
-        static void FillBits(Keys& keys, Node* node, unsigned int index, BitBuffer bits)
+        static void FillBits(Keys& keys, Node* node, unsigned int index, BitFiFo bits)
         {
             bits.Push(index, 1u);
             if (node->type == NodeType::leaf)
@@ -74,17 +74,17 @@ void StaticHuffmanCompressor::BuildTree()
             }
         }
     };
-    BitBuffer bits;
+    BitFiFo bits;
     LocalFunctions::FillBits(m_keys, m_tree->node[0], 0, bits);
     LocalFunctions::FillBits(m_keys, m_tree->node[1], 1, bits);
 }
 
-void StaticHuffmanCompressor::WriteTree(BitBuffer& buffer) const
+void StaticHuffmanCompressor::WriteTree(BitFiFo& buffer) const
 {
     class Helper
     {
     public:
-        Helper(BitBuffer& buffer)
+        Helper(BitFiFo& buffer)
             : m_buffer(buffer)
         {}
 
@@ -103,12 +103,12 @@ void StaticHuffmanCompressor::WriteTree(BitBuffer& buffer) const
             }
         }
     private:
-        BitBuffer& m_buffer;
+        BitFiFo& m_buffer;
     };
     Helper(buffer).WriteNode(*m_tree);
 }
 
-void StaticHuffmanCompressor::WriteKeyUsingTree(BitBuffer& buffer, unsigned int key) const
+void StaticHuffmanCompressor::WriteKeyUsingTree(BitFiFo& buffer, unsigned int key) const
 {
     buffer.Push(m_keys[key].bits);
 }
@@ -163,7 +163,7 @@ void StaticHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer)
         m_inBuffer.insert(m_inBuffer.end(), end, ioBuffer.end());
     }
     ioBuffer.clear();
-    m_outBuffer.RetrieveFrontBytes(ioBuffer);
+    m_outBuffer.Pop(ioBuffer);
 }
 
 void StaticHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
@@ -176,8 +176,7 @@ void StaticHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
     }
 
     WriteKeyUsingTree(m_outBuffer,keyEnd);
-    m_outBuffer.FlushBack();
-    m_outBuffer.RetrieveFrontBytes(ioBuffer);
+    m_outBuffer.Pop(ioBuffer,true);
 }
 
 
@@ -195,7 +194,7 @@ bool StaticHuffmanDeCompressor::ReadTree()
     class Helper
     {
     public:
-        Helper(BitBuffer& buffer,
+        Helper(BitFiFo& buffer,
                NodeCache& nodeCache)
             : m_index(0)
             , m_buffer(buffer)
@@ -209,7 +208,7 @@ bool StaticHuffmanDeCompressor::ReadTree()
     private:
         Node* ReadNode()
         {
-            if (m_buffer.BitsAvailable() < 10)
+            if (m_buffer.Size() < 10)
             {
                 return nullptr;
             }
@@ -234,10 +233,10 @@ bool StaticHuffmanDeCompressor::ReadTree()
 
     private:
         unsigned int m_index = 0;
-        BitBuffer& m_buffer;
+        BitFiFo& m_buffer;
         NodeCache& m_nodeCache;
     };
-    if (m_inBuffer.BitsAvailable() >= keyCount * 2)
+    if (m_inBuffer.Size() >= keyCount * 2)
     {
         Helper helper(m_inBuffer, m_nodeCache);
         if (nullptr != (m_tree = helper.ReadTree()))
@@ -248,7 +247,7 @@ bool StaticHuffmanDeCompressor::ReadTree()
     }
     else
     {
-        BitBuffer tempBuffer(m_inBuffer);
+        BitFiFo tempBuffer(m_inBuffer);
         Helper helper(tempBuffer, m_nodeCache);
         if (nullptr != (m_tree = helper.ReadTree()))
         {
@@ -294,9 +293,9 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
             {
             case keyEnd:
                 // see if the filling bits are 0
-                if (m_inBuffer.BitsAvailable() < 8)
+                if (m_inBuffer.Size() < 8)
                 {
-                    unsigned int i = m_inBuffer.Pop(static_cast<unsigned int>(m_inBuffer.BitsAvailable()));
+                    unsigned int i = m_inBuffer.Pop(static_cast<unsigned int>(m_inBuffer.Size()));
                     if (i != 0)
                     {
                         throw std::runtime_error("Invalid data");
@@ -344,7 +343,7 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
 void StaticHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 {
     DeCompress(ioBuffer);
-    if (m_inBuffer.HasData() ||
+    if (!m_inBuffer.Empty() ||
         (m_currentNode != nullptr && (m_currentNode->type == NodeType::branch || m_currentNode->key != keyEnd)))
     {
         throw std::runtime_error("Incomplete data");

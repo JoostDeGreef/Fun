@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BitBuffer.h"
+#include "BitFiFo.h"
 #include "ICompress.h"
 
 // bit stream format:
@@ -51,7 +51,7 @@ private:
     struct Key
     {
         uint64_t count;
-        BitBuffer bits;
+        BitFiFo bits;
     };
     typedef std::array<Key, keyCount> Keys;
     Keys m_keys;
@@ -60,12 +60,12 @@ private:
     void BuildTree();
     void CompressBuffer(std::vector<unsigned char>::const_iterator begin, std::vector<unsigned char>::const_iterator end);
 
-    void WriteTree(BitBuffer& buffer) const;
-    void WriteKeyUsingTree(BitBuffer& buffer, unsigned int key) const;
+    void WriteTree(BitFiFo& buffer) const;
+    void WriteKeyUsingTree(BitFiFo& buffer, unsigned int key) const;
 
     Nodes m_nodes;
     std::vector<unsigned char> m_inBuffer;
-    BitBuffer m_outBuffer;
+    BitFiFo m_outBuffer;
 };
 
 class StaticHuffmanDeCompressor : public IDeCompressor, StaticHuffmanCommon
@@ -82,7 +82,7 @@ private:
 
     Nodes m_startNodes;
     Node* m_currentNode;
-    BitBuffer m_inBuffer;
+    BitFiFo m_inBuffer;
     unsigned int m_blockCount;
 };
 

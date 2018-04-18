@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BitBuffer.h"
+#include "BitFiFo.h"
 
 template<size_t KEY_COUNT>
 class HuffmanCommon
@@ -100,7 +100,7 @@ protected:
             void Run(KeyPtrs::iterator begin,KeyPtrs::iterator end)
             {
                 Node* node = GetNode();
-                Split(begin, end, node, BitBuffer());
+                Split(begin, end, node, BitFiFo());
             };
 
         private:
@@ -144,7 +144,7 @@ protected:
                 unsigned int index,
                 KeyPtrs::iterator begin,
                 KeyPtrs::iterator end,
-                BitBuffer bits)
+                BitFiFo bits)
             {
                 node->node[index] = GetNode();
                 bits.Push(index, 1);
@@ -154,7 +154,7 @@ protected:
             void Split(KeyPtrs::iterator begin,
                 KeyPtrs::iterator end,
                 Node* node,
-                BitBuffer bits)
+                BitFiFo bits)
             {
                 auto dist = std::distance(begin, end);
                 switch (dist)
@@ -164,9 +164,8 @@ protected:
                 case 1:
                     node->type = NodeType::leaf;
                     node->leaf = (**begin).value;
-                    (**begin).length = bits.BitsAvailable();
-                    bits.FlushBack();
-                    bits.RetrieveFrontBytes((**begin).bits);
+                    (**begin).length = bits.Size();
+                    bits.Pop((**begin).bits,true);
                     break;
                 case 2:
                     node->type = NodeType::branch;

@@ -31,7 +31,7 @@ void StaticBlockHuffmanCompressor::WriteTree()
     class Helper
     {
     public:
-        Helper(BitBuffer& buffer)
+        Helper(BitFiFo& buffer)
             : m_buffer(buffer)
         {}
 
@@ -50,7 +50,7 @@ void StaticBlockHuffmanCompressor::WriteTree()
             }
         }
     private:
-        BitBuffer& m_buffer;
+        BitFiFo& m_buffer;
     };
     Helper(m_buffer).WriteNode(m_tree);
 }
@@ -107,7 +107,7 @@ void StaticBlockHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer
         }
     }
     ioBuffer.clear();
-    m_buffer.RetrieveFrontBytes(ioBuffer);        
+    m_buffer.Pop(ioBuffer);        
 }
 
 void StaticBlockHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
@@ -131,15 +131,14 @@ void StaticBlockHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 
     WriteKeyUsingTree(keyEnd);
 
-    m_buffer.FlushBack();
     if (ioBuffer.empty())
     {
-        m_buffer.RetrieveFrontBytes(ioBuffer);
+        m_buffer.Pop(ioBuffer,true);
     }
     else
     {
         std::vector<unsigned char> temp;
-        m_buffer.RetrieveFrontBytes(temp);
+        m_buffer.Pop(temp,true);
         ioBuffer.insert(ioBuffer.end(), temp.begin(), temp.end());
     }
 }
@@ -156,7 +155,7 @@ bool StaticBlockHuffmanDeCompressor::ReadTree()
     class Helper
     {
     public:
-        Helper(BitBuffer& buffer,
+        Helper(BitFiFo& buffer,
                TreeCache& treeCache,
                Keys& keys)
             : m_index(0)
@@ -167,7 +166,7 @@ bool StaticBlockHuffmanDeCompressor::ReadTree()
 
         Node* ReadNode()
         {
-            if (m_buffer.BitsAvailable() < 10)
+            if (m_buffer.Size() < 10)
             {
                 return nullptr;
             }
@@ -202,31 +201,30 @@ bool StaticBlockHuffmanDeCompressor::ReadTree()
 
         void BuildKeys()
         {
-            AddNodeToKey(m_treeCache[0].node[0], 0, BitBuffer());
-            AddNodeToKey(m_treeCache[0].node[1], 1, BitBuffer());
+            AddNodeToKey(m_treeCache[0].node[0], 0, BitFiFo());
+            AddNodeToKey(m_treeCache[0].node[1], 1, BitFiFo());
         }
     private:
-        void AddNodeToKey(Node* node, unsigned int index, BitBuffer bits)
+        void AddNodeToKey(Node* node, unsigned int index, BitFiFo bits)
         {
             bits.Push(index, 1u);
             if (node->type == NodeType::branch)
             {
-                AddNodeToKey(node->node[0], 0, BitBuffer());
-                AddNodeToKey(node->node[1], 1, BitBuffer());
+                AddNodeToKey(node->node[0], 0, BitFiFo());
+                AddNodeToKey(node->node[1], 1, BitFiFo());
             }
             else
             {
-                m_keys[node->leaf].length = bits.BitsAvailable();
-                bits.FlushBack();
-                bits.RetrieveFrontBytes(m_keys[node->leaf].bits);
+                m_keys[node->leaf].length = bits.Size();
+                bits.Pop(m_keys[node->leaf].bits,true);
             }
         }
         unsigned int m_index = 0;
-        BitBuffer& m_buffer;
+        BitFiFo& m_buffer;
         TreeCache& m_treeCache;
         Keys& m_keys;
     };
-    if (m_buffer.BitsAvailable() >= m_keyCount * 2)
+    if (m_buffer.Size() >= m_keyCount * 2)
     {
         Helper helper(m_buffer, m_treeCache, m_keys);
         if (nullptr != helper.ReadNode())
@@ -239,7 +237,7 @@ bool StaticBlockHuffmanDeCompressor::ReadTree()
     }
     else
     {
-        BitBuffer tempBuffer(m_buffer);
+        BitFiFo tempBuffer(m_buffer);
         Helper helper(tempBuffer, m_treeCache, m_keys);
         if (nullptr != helper.ReadNode())
         {
@@ -263,7 +261,7 @@ void StaticBlockHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBu
         if (m_currentNode->type == NodeType::branch)
         {
             unsigned int index;
-            if(m_buffer.BitsAvailable()>=m_keys[keyEnd].length)
+            if(m_buffer.Size()>=m_keys[keyEnd].length)
             {
                 for(;m_currentNode->type != NodeType::leaf;)
                 {
@@ -305,13 +303,17 @@ void StaticBlockHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBu
                 break;
             case keyEnd:
                 // see if the filling bits are 0
-                if(m_buffer.BitsAvailable()<8)
+                if(m_buffer.Size()<8)
                 {
-                    unsigned int i=m_buffer.Pop(static_cast<unsigned int>(m_buffer.BitsAvailable()));
+                    unsigned int i=m_buffer.Pop(static_cast<unsigned int>(m_buffer.Size()));
                     if(i != 0)
                     {
                         throw std::runtime_error("Invalid data");
                     }
+                }
+                else
+                {
+                    throw std::runtime_error("Unexpected data");
                 }
                 // stop any further actions.
                 run = false;
@@ -339,7 +341,7 @@ void StaticBlockHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBu
 void StaticBlockHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)
 {
     DeCompress(ioBuffer);
-    if (m_buffer.HasData() ||
+    if (!m_buffer.Empty() ||
         m_currentNode->type == NodeType::branch ||
         m_currentNode->leaf != keyEnd)
     {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BitBuffer.h"
+#include "BitFiFo.h"
 #include "ICompress.h"
 #include "HuffmanCommon.h"
 
@@ -25,7 +25,7 @@ protected:
 
     StaticBlockHuffmanCommon();
 
-    BitBuffer m_buffer;
+    BitFiFo m_buffer;
 };
 
 class StaticBlockHuffmanCompressor : public ICompressor, StaticBlockHuffmanCommon
