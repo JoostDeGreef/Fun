@@ -14,10 +14,20 @@ private:
 
 public:
     BitFiFo()
-        : m_data(1,0)
-        , m_begin(0)
-        , m_end(0)
-    {}
+    {
+        m_data.emplace_back();
+        Clear();
+    }
+
+    BitFiFo(BitFiFo&& other)
+    {
+        Swap(other);
+    }
+
+    BitFiFo(const BitFiFo& other)
+    {
+        Copy(other);
+    }
 
     void Swap(BitFiFo& other)
     {
@@ -26,10 +36,19 @@ public:
         std::swap(m_end, other.m_end);
     }
 
+    void Copy(const BitFiFo& other)
+    {
+        m_data = other.m_data;
+        m_begin = other.m_begin;
+        m_end = other.m_end;
+    }
+
     void Clear()
     {
-        m_data.clear();
-        m_data.emplace_back(0);
+        for (auto& data : m_data)
+        {
+            data = 0;
+        }
         m_begin = 0;
         m_end = 0;
     }
@@ -46,38 +65,50 @@ public:
     template<typename INTEGER>
     void Push(INTEGER data, const size_t bits)
     {
-//        static_assert(std::is_integer<INTEGER>::value && !std::is_signed<INTEGER>::value, "Unsigned integer type required.");
         assert(bits <= sizeof(data) * 8);
-        assert(data>>bits==0 || bits==data_bits);
-        size_t offset = m_end % data_bits;
-        m_data.back() |= data << offset;
-        if (data_bits - offset <= bits)
+        assert(((data_type)data)>>bits==0 || bits==data_bits);
+        if (m_end+bits >= data_bits*m_data.size())
         {
-            m_data.emplace_back(data >> (data_bits - offset));
+            m_data.emplace_back(0);
+        }
+        size_t offset = m_end % data_bits;
+        m_data[m_end / data_bits] |= ((data_type)data) << offset;
+        if (data_bits - offset < bits)
+        {
+            m_data[1 + m_end / data_bits] |= ((data_type)data) >> (data_bits - offset);
         }
         m_end += bits;
     }
 
     template<typename INTEGER>
-    void Push(const std::vector<INTEGER>& data, size_t bits)
+    void Push(const std::vector<INTEGER>& data, const size_t bits)
     {
+#ifdef _DEBUG
+        size_t size = Size();
+#endif // _DEBUG
         assert(data.size() == (bits + sizeof(INTEGER)*8 - 1) / (sizeof(INTEGER)*8));
-        for (unsigned int i = 0; i < bits / (sizeof(INTEGER) * 8); ++i)
+        auto iter = data.cbegin();
+        auto end = data.cbegin() + bits / (sizeof(INTEGER) * 8);
+        for (; iter!=end ; ++iter)
         {
-            Push(data[i], sizeof(INTEGER) * 8);
+            Push(*iter, sizeof(INTEGER) * 8);
         }
-        bits = bits % (sizeof(INTEGER) * 8);
-        if (bits != 0)
+        if (bits % (sizeof(INTEGER) * 8) != 0)
         {
-            Push(data.back(), bits);
+            Push(*iter, bits % (sizeof(INTEGER) * 8));
         }
+#ifdef _DEBUG
+        assert(size + bits == Size());
+#endif // _DEBUG
     }
 
     void Push(const BitFiFo& other)
     {
-        // todo: check this!
+#ifdef _DEBUG
+        size_t size = Size();
+#endif // _DEBUG
         auto iter = other.m_data.begin() + other.m_begin / data_bits;
-        auto end = other.m_data.begin() + (other.m_end + data_bits - 1) / data_bits;
+        auto end = other.m_data.begin() + other.m_end / data_bits;
         data_type val;
         const size_t prebits = data_bits - (other.m_begin % data_bits);
         if (prebits < data_bits)
@@ -105,6 +136,9 @@ public:
             val = *iter;
             Push(val, postbits);
         }
+#ifdef _DEBUG
+        assert(size + other.Size() == Size());
+#endif // _DEBUG
     }
 
     unsigned int Pop(const size_t bits)
@@ -112,7 +146,6 @@ public:
         unsigned int res = Peek(bits);
         m_begin += bits;
         assert(m_begin <= m_end);
-        Optimize();
         return res;
     }
     bool TryPop(unsigned int& data, unsigned int bits)
@@ -122,7 +155,6 @@ public:
         {
             m_begin += bits;
             assert(m_begin <= m_end);
-            Optimize();
         }
         return res;
     }
@@ -140,7 +172,6 @@ private:
     template<typename INTEGER>
     void Flush() // fill the buffer with 0 so the size if a multitude of sizeof(INTEGER)*8
     {
-//        static_assert(std::is_integer<INTEGER>::value && !std::is_signed<INTEGER>::value, "Unsigned integer type required.");
         Flush(sizeof(INTEGER) * 8);
     }
     void Flush(const size_t granularity) // fill the buffer with 0 so the size % granularity = 0
@@ -165,27 +196,33 @@ public:
     void Pop(std::vector<INTEGER>& outBuffer)
     {
         // todo: improve this
-        while (Size() >= sizeof(INTEGER))
+        while (Size() >= sizeof(INTEGER)*8)
         {
-            outBuffer.emplace_back((INTEGER)Peek(sizeof(INTEGER)));
-            m_begin += sizeof(INTEGER);
+            outBuffer.emplace_back((INTEGER)Peek(sizeof(INTEGER)*8));
+            m_begin += sizeof(INTEGER)*8;
             assert(m_begin <= m_end);
-        }
-        Optimize();
-    }
-private:
-    void Optimize()
-    {
-        if (m_begin > data_bits * 1024)
-        {
-            const size_t remove = m_begin / data_bits;
-            m_data.erase(m_data.begin(), m_data.begin() + remove);
-            m_begin -= data_bits * remove;
-            m_end -= data_bits * remove;
         }
     }
 
-    std::deque<data_type> m_data;
+    void Optimize()
+    {
+        if (m_begin > data_bits * 4096)
+        {
+            if (m_begin == m_end)
+            {
+                Clear();
+            }
+            else
+            {
+                const size_t remove = m_begin / data_bits;
+                m_data.erase(m_data.begin(), m_data.begin() + remove);
+                m_begin -= data_bits * remove;
+                m_end -= data_bits * remove;
+            }
+        }
+    }
+
+    std::vector<data_type> m_data;
     size_t m_begin;
     size_t m_end;
 };

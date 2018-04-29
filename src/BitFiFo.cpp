@@ -26,7 +26,7 @@ bool BitFiFo::TryPeek(unsigned int& data, size_t bits)
         {
             firstSize = data_bits - firstOffset;
             data  = (m_data[index] >> firstOffset) & mask[firstSize];
-            data |= m_data[index+1] & mask[bits-firstSize];
+            data |= (m_data[index+1] & mask[bits-firstSize]) << firstSize;
         }
         return true;
     }

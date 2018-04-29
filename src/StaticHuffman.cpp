@@ -164,6 +164,7 @@ void StaticHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer)
     }
     ioBuffer.clear();
     m_outBuffer.Pop(ioBuffer);
+    m_outBuffer.Optimize();
 }
 
 void StaticHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
@@ -338,6 +339,7 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
             }
         }
     }
+    m_inBuffer.Optimize();
 }
 
 void StaticHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)

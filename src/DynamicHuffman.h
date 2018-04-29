@@ -175,13 +175,13 @@ protected:
     {
         m_nodes.clear();
         // add nodes for all used keys
-        for (size_t i = 0; i < keyCount; ++i)
+        for (auto& key:m_keys)
         {
-            if (m_keys[i].count > 0)
+            if (key.count > 0)
             {
-                m_keys[i].ClearBits();
+                key.ClearBits();
                 Node* node = AddNode();
-                node->SetKey(&m_keys[i]);
+                node->SetKey(&key);
             }
         }
         // sort nodes, these are all 'key nodes'

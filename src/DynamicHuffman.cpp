@@ -40,6 +40,7 @@ void DynamicHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer)
     }
     ioBuffer.clear();
     m_buffer.Pop(ioBuffer);
+    m_buffer.Optimize();
 }
 
 void DynamicHuffmanCompressor::Finish(std::vector<unsigned char>& ioBuffer)
@@ -142,6 +143,7 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
             }
         }
     }
+    m_buffer.Optimize();
 }
 
 void DynamicHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)
