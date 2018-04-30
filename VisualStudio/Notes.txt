@@ -114,3 +114,30 @@ BitFiFo with reduced optimize:
 [    DEBUG ] RLE_StaticBlockHuffman:   51 %      36 %       7 %     0 %   1048/688
 [    DEBUG ]     RLE_DynamicHuffman:   49 %      35 %       6 %     0 %   1112/1135
 [       OK ] CompressTest.Ratio (14741 ms).
+
+Improved FillBits:
+[    DEBUG ]                         Random  Sequence  Sawtooth  Single   Time (ms)
+[    DEBUG ]            PassThrough:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]                    RLE:  107 %     100 %      11 %     1 %   223/223
+[    DEBUG ]                 Window:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]          StaticHuffman:   50 %      35 %      35 %    12 %   719/732
+[    DEBUG ]     StaticBlockHuffman:   47 %      36 %      36 %    12 %   1330/831
+[    DEBUG ]         DynamicHuffman:   45 %      35 %      35 %    12 %   1808/2115
+[    DEBUG ]      RLE_StaticHuffman:   49 %      35 %       8 %     0 %   662/607
+[    DEBUG ] RLE_StaticBlockHuffman:   51 %      36 %       7 %     0 %   1043/742
+[    DEBUG ]     RLE_DynamicHuffman:   49 %      35 %       6 %     0 %   998/1116
+[       OK ] CompressTest.Ratio (14340 ms).
+
+Inlining?
+[ RUN      ] CompressTest.Ratio.
+[    DEBUG ]                         Random  Sequence  Sawtooth  Single   Time (ms)
+[    DEBUG ]            PassThrough:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]                    RLE:  107 %     100 %      11 %     1 %   236/233
+[    DEBUG ]                 Window:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]          StaticHuffman:   50 %      35 %      35 %    12 %   715/731
+[    DEBUG ]     StaticBlockHuffman:   47 %      36 %      36 %    12 %   1324/805
+[    DEBUG ]         DynamicHuffman:   45 %      35 %      35 %    12 %   1774/2032
+[    DEBUG ]      RLE_StaticHuffman:   49 %      35 %       8 %     0 %   639/596
+[    DEBUG ] RLE_StaticBlockHuffman:   51 %      36 %       7 %     0 %   1064/719
+[    DEBUG ]     RLE_DynamicHuffman:   49 %      35 %       6 %     0 %   1006/1139
+[       OK ] CompressTest.Ratio (14181 ms).

@@ -11,10 +11,12 @@ class BitFiFo
 private:
     typedef uint64_t data_type;
     static const size_t data_bits = sizeof(data_type) * 8;
+    static const size_t overflow_block = 4096;
 
 public:
     BitFiFo()
     {
+        m_data.emplace_back();
         m_data.emplace_back();
         Clear();
     }
@@ -60,6 +62,11 @@ public:
     bool Empty() const
     {
         return m_end == m_begin;
+    }
+
+    void Reserve(const size_t bits)
+    {
+        m_data.reserve(overflow_block + (bits + data_bits - 1)/data_bits);
     }
 
     template<typename INTEGER>
@@ -206,7 +213,7 @@ public:
 
     void Optimize()
     {
-        if (m_begin > data_bits * 4096)
+        if (m_begin > data_bits * overflow_block)
         {
             if (m_begin == m_end)
             {

@@ -18,7 +18,7 @@ protected:
     static const unsigned int keyEnd = 257;
 
     static const unsigned int keyCount = 258;
-    static const unsigned int startNodeBits = 4;
+    static const unsigned int startNodeBits = 5;
 
     // input/output buffer
     BitFiFo m_buffer;
@@ -46,7 +46,6 @@ protected:
         Node* node = nullptr;
         unsigned int value = 0;
         unsigned int count = 0;
-        // todo: optimize bits?
         KeyBits bits;
         void ClearBits()
         {
@@ -54,16 +53,15 @@ protected:
         }
         void FillBits()
         {
-            std::vector<unsigned char> nodeBits;
-            Node* n = node;
-            while (n->parent != nullptr)
+            FillBits(node, bits);
+        }
+    private:
+        inline static void FillBits(Node* n, KeyBits& bits)
+        {
+            if (n->parent)
             {
-                nodeBits.push_back(n->parent->node[0] == n ? 0 : 1);
-                n = n->parent;
-            }
-            for (auto iter = nodeBits.crbegin(); iter != nodeBits.crend(); ++iter)
-            {
-                bits.Push(*iter, 1u);
+                FillBits(n->parent, bits);
+                bits.Push(n->parent->node[0] == n ? 0u : 1u, 1u);
             }
         }
     };
@@ -131,7 +129,7 @@ protected:
     }
 
     // add a node to the end of m_nodes;
-    Node* AddNode()
+    inline Node* AddNode()
     {
         m_nodes.emplace_back(&m_nodeCache[m_nodes.size()]);
         return m_nodes.back();

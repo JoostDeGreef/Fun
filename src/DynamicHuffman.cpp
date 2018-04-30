@@ -22,6 +22,7 @@ void DynamicHuffmanCompressor::WriteKeyUsingTree(unsigned int key)
 
 void DynamicHuffmanCompressor::Compress(std::vector<unsigned char>& ioBuffer)
 {
+    m_buffer.Reserve(ioBuffer.size() * sizeof(ioBuffer[0]) * 8);
     for (size_t i = 0; i < ioBuffer.size(); ++i)
     {
         const auto c = ioBuffer[i];
@@ -70,12 +71,13 @@ DynamicHuffmanDeCompressor::DynamicHuffmanDeCompressor()
 
 void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
 {
+    m_buffer.Reserve(ioBuffer.size()*sizeof(ioBuffer[0])*8);
     m_buffer.Push(ioBuffer, static_cast<unsigned int>(ioBuffer.size() * 8));
     ioBuffer.clear();
     bool run = true;
-    unsigned int index;
-    auto ResetTree = [&index,this](const unsigned int key, const bool forceUpdate)
+    auto ResetTree = [&](const unsigned int key, const bool forceUpdate)
     {
+        unsigned int index;
         if (UpdateTree(key, forceUpdate))
         {
             FillStartNodes();
@@ -94,6 +96,7 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
     {
         if (m_currentNode->type == NodeType::branch)
         {
+            unsigned int index;
             while (run && m_currentNode->type != NodeType::leaf)
             {
                 run = m_buffer.TryPop(index,1u);
