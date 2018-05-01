@@ -97,16 +97,16 @@ protected:
                 , m_cacheUsed(0)
             {}
 
-            void Run(KeyPtrs::iterator begin,KeyPtrs::iterator end)
+            void Run(typename KeyPtrs::iterator begin,typename KeyPtrs::iterator end)
             {
                 Node* node = GetNode();
                 Split(begin, end, node, BitFiFo());
             };
 
         private:
-            KeyPtrs::iterator FindFirstAboveValue(
-                KeyPtrs::iterator begin,
-                KeyPtrs::iterator end,
+            typename KeyPtrs::iterator FindFirstAboveValue(
+                typename KeyPtrs::iterator begin,
+                typename KeyPtrs::iterator end,
                 size_t value)
             {
                 auto dist = std::distance(begin, end);
@@ -140,10 +140,11 @@ protected:
                 }
             }
 
-            void FillNode(Node* node,
+            void FillNode(
+                Node* node,
                 unsigned int index,
-                KeyPtrs::iterator begin,
-                KeyPtrs::iterator end,
+                typename KeyPtrs::iterator begin,
+                typename KeyPtrs::iterator end,
                 BitFiFo bits)
             {
                 node->node[index] = GetNode();
@@ -151,8 +152,9 @@ protected:
                 Split(begin, end, node->node[index], bits);
             }
 
-            void Split(KeyPtrs::iterator begin,
-                KeyPtrs::iterator end,
+            void Split(
+                typename KeyPtrs::iterator begin,
+                typename KeyPtrs::iterator end,
                 Node* node,
                 BitFiFo bits)
             {

@@ -1,6 +1,6 @@
 #include "CommonTestFunctionality.h"
 
-#include "BitFiFO.h"
+#include "BitFiFo.h"
 
 class BitFiFoTest : public Test
 {

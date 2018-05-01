@@ -2,8 +2,8 @@
 AR=ar
 CC=gcc
 CPP=g++
-CFLAGS=-W -Wall
-CPPFLAGS=-W -Wall -g -ggdb
+CFLAGS=-W -Wall -O3 -DNDEBUG
+CPPFLAGS=-W -Wall -O3 -DNDEBUG
 #CFLAGS=
 #CPPFLAGS=
 

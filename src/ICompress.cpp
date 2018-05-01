@@ -1,6 +1,7 @@
 #include <cassert>
 #include <array>
 #include <deque>
+#include <algorithm>
 
 #include "ICompress.h"
 

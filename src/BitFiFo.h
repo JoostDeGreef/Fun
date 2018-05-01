@@ -169,8 +169,12 @@ public:
     unsigned int Peek(const size_t bits)
     {
         unsigned int data = 0;
+#ifdef _DEBUG
         bool res = TryPeek(data, bits);
         assert(res);
+#else // _DEBUG
+        TryPeek(data, bits);
+#endif // _DEBUG        
         return data;
     }
     bool TryPeek(unsigned int& data, size_t bits);
