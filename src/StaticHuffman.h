@@ -15,7 +15,7 @@ protected:
     static const unsigned int keyEnd = 256;
     static const unsigned int keyCount = 257;
     static const unsigned int blockSize = 16384;
-    static const unsigned int startNodeBits = 4;
+    static const unsigned int startNodeBits = 5;
 
     enum class NodeType
     {

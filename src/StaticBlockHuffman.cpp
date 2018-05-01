@@ -39,13 +39,13 @@ void StaticBlockHuffmanCompressor::WriteTree()
         {
             if (node.type == NodeType::branch)
             {
-                m_buffer.Push(0u, 1u);
+                m_buffer.PushBit(false);
                 WriteNode(*node.node[0]);
                 WriteNode(*node.node[1]);
             }
             else
             {
-                m_buffer.Push(1u, 1u);
+                m_buffer.PushBit(true);
                 m_buffer.Push(node.leaf, 9u);
             }
         }
@@ -173,7 +173,7 @@ bool StaticBlockHuffmanDeCompressor::ReadTree()
             }
             Node& node = m_treeCache[m_index];
             ++m_index;
-            node.type = m_buffer.Pop(1u) == 0 ? NodeType::branch : NodeType::leaf;
+            node.type = m_buffer.PopBit() == 0 ? NodeType::branch : NodeType::leaf;
             if (node.type == NodeType::branch)
             {
                 if ((node.node[0] = ReadNode()) == nullptr ||
@@ -266,7 +266,7 @@ void StaticBlockHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBu
             {
                 for(;m_currentNode->type != NodeType::leaf;)
                 {
-                    index = m_buffer.Pop(1u);
+                    index = m_buffer.PopBit();
                     m_currentNode = m_currentNode->node[index];
                 }
             }

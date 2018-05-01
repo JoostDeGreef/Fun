@@ -148,7 +148,7 @@ protected:
                 BitFiFo bits)
             {
                 node->node[index] = GetNode();
-                bits.Push(index, 1);
+                bits.PushBit(index);
                 Split(begin, end, node->node[index], bits);
             }
 

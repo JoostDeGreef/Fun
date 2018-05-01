@@ -13,6 +13,9 @@ private:
     static const size_t data_bits = sizeof(data_type) * 8;
     static const size_t overflow_block = 4096;
 
+    static const unsigned int mask[]; // (1 << n) - 1
+    static const uint64_t bit_mask[]; //  1 << n
+
 public:
     BitFiFo()
     {
@@ -67,6 +70,19 @@ public:
     void Reserve(const size_t bits)
     {
         m_data.reserve(overflow_block + (bits + data_bits - 1)/data_bits);
+    }
+
+    void PushBit(bool bit)
+    {
+        if (m_end >= data_bits * m_data.size())
+        {
+            m_data.emplace_back(bit ? 1u : 0u);
+        }
+        else if (bit)
+        {
+            m_data[m_end / data_bits] |= bit_mask[m_end % data_bits];
+        }
+        m_end++;
     }
 
     template<typename INTEGER>
@@ -166,18 +182,72 @@ public:
         return res;
     }
 
+    unsigned int PopBit()
+    {
+        unsigned int res = PeekBit();
+        m_begin++;
+        assert(m_begin <= m_end);
+        return res;
+    }
+    bool TryPopBit(unsigned int& data)
+    {
+        bool res = TryPeekBit(data);
+        if (res)
+        {
+            m_begin++;
+            assert(m_begin <= m_end);
+        }
+        return res;
+    }
+
     unsigned int Peek(const size_t bits)
     {
         unsigned int data = 0;
-#ifdef _DEBUG
-        bool res = TryPeek(data, bits);
-        assert(res);
-#else // _DEBUG
         TryPeek(data, bits);
-#endif // _DEBUG        
         return data;
     }
-    bool TryPeek(unsigned int& data, size_t bits);
+    bool TryPeek(unsigned int& data, size_t bits)
+    {
+        assert(bits <= sizeof(data) * 8);
+        if (Size() >= bits)
+        {
+            const size_t index = m_begin / data_bits;
+            const size_t firstOffset = m_begin % data_bits;
+            size_t firstSize = firstOffset + bits;
+            if (firstSize <= data_bits)
+            {
+                data = (m_data[index] >> firstOffset) & mask[bits];
+            }
+            else
+            {
+                firstSize = data_bits - firstOffset;
+                data = (m_data[index] >> firstOffset) & mask[firstSize];
+                data |= (m_data[index + 1] & mask[bits - firstSize]) << firstSize;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    unsigned int PeekBit()
+    {
+        unsigned int data = 0;
+        TryPeekBit(data);
+        return data;
+    }
+    bool TryPeekBit(unsigned int& data)
+    {
+        if (m_begin != m_end)
+        {
+            const size_t index = m_begin / data_bits;
+            const size_t firstOffset = m_begin % data_bits;
+
+            data = (m_data[index] & bit_mask[firstOffset]) ? 1 : 0;
+
+            return true;
+        }
+        return false;
+    }
 
 private:
     template<typename INTEGER>

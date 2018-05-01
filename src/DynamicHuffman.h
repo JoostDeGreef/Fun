@@ -61,18 +61,16 @@ protected:
             if (n->parent)
             {
                 FillBits(n->parent, bits);
-                bits.Push(n->parent->node[0] == n ? 0u : 1u, 1u);
+                bits.PushBit(n->parent->node[0] != n);
             }
         }
     };
     struct Node
     {
-        NodeType type;
-        unsigned int count;
-        unsigned int depth;
         Node* parent;
         Node* before;
-        Node* after;
+        unsigned int count;
+        NodeType type;
         union
         {
             Node* node[2];
@@ -137,12 +135,10 @@ protected:
 
     bool UpdateTree(unsigned int key, const bool forceUpdate)
     {
+        // TODO: something is wrong here...
         auto NodeOrderBroken = [](Node* node)
         {
-            bool res = false;
-            res = res || (node->before != nullptr && node->count > node->before->count);
-            res = res || (node->after != nullptr && node->after->count > node->count);
-            return res;
+            return (node->before != nullptr && node->count > node->before->count);
         };
         auto UpdateNode = [&NodeOrderBroken](Node* node)
         {
@@ -157,12 +153,13 @@ protected:
         };
         // only update when there is a neighbor change detected
         m_keys[key].count++;
-        bool rebuildTree = !UpdateNode(m_keys[key].node);
-        if (rebuildTree || forceUpdate)
+        if (forceUpdate)
         {
-            // todo:
-            //   - see if the rebuild can be avoided completely?
-            //   - perform a partial tree rebuild only?
+            BuildTree();
+            return true;
+        }
+        else if( !UpdateNode(m_keys[key].node) )
+        {
             BuildTree();
             return true;
         }
@@ -205,19 +202,14 @@ protected:
             }
             m_tree = node;
         }
-        // fill before/after
+        // fill before
         {
             Node* prev = nullptr;
             for (auto& node : m_nodes)
             {
                 node->before = prev;
-                if (nullptr != prev)
-                {
-                    prev->after = node;
-                }
                 prev = node;
             }
-            prev->after = nullptr;
         }
     }
 };
@@ -243,9 +235,6 @@ public:
     void Finish(std::vector<unsigned char>& ioBuffer) override;
 
 private:
-    void FillStartNodes();
-
-    Nodes m_startNodes;
     Node * m_currentNode;
 };
 

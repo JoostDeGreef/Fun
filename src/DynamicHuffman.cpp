@@ -66,7 +66,6 @@ DynamicHuffmanDeCompressor::DynamicHuffmanDeCompressor()
     : DynamicHuffmanCommon()
     , m_currentNode(m_tree)
 {
-    FillStartNodes();
 }
 
 void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
@@ -75,23 +74,6 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
     m_buffer.Push(ioBuffer, static_cast<unsigned int>(ioBuffer.size() * 8));
     ioBuffer.clear();
     bool run = true;
-    auto ResetTree = [&](const unsigned int key, const bool forceUpdate)
-    {
-        unsigned int index;
-        if (UpdateTree(key, forceUpdate))
-        {
-            FillStartNodes();
-        }
-        if (m_buffer.TryPeek(index, startNodeBits))
-        {
-            m_currentNode = m_startNodes[index];
-            m_buffer.Pop(m_currentNode->depth);
-        }
-        else
-        {
-            m_currentNode = m_tree;
-        }
-    };
     while (run)
     {
         if (m_currentNode->type == NodeType::branch)
@@ -99,7 +81,7 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
             unsigned int index;
             while (run && m_currentNode->type != NodeType::leaf)
             {
-                run = m_buffer.TryPop(index,1u);
+                run = m_buffer.TryPopBit(index);
                 if (run)
                 {
                     m_currentNode = m_currentNode->node[index];
@@ -118,7 +100,8 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
                     ioBuffer.emplace_back(static_cast<unsigned char>(c));
                     assert(m_keys[c].count == 0);
                     m_keys[keyNew].count++;
-                    ResetTree(c,true);
+                    UpdateTree(c, true);
+                    m_currentNode = m_tree;
                 }
                 break;
             case keyEnd:
@@ -141,7 +124,8 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
             default:
                 ioBuffer.emplace_back(static_cast<unsigned char>(m_currentNode->key->value));
                 assert(m_keys[m_currentNode->key->value].count != 0);
-                ResetTree(m_currentNode->key->value, false);
+                UpdateTree(m_currentNode->key->value, false);
+                m_currentNode = m_tree;
                 break;
             }
         }
@@ -160,57 +144,4 @@ void DynamicHuffmanDeCompressor::Finish(std::vector<unsigned char>& ioBuffer)
     }
 }
 
-void DynamicHuffmanDeCompressor::FillStartNodes()
-{
-    // todo: turn this into a recursive template
-    class Helper
-    {
-    public:
-        inline
-        static void Fill(Nodes& nodes, Node* tree)
-        {
-            FillBranch(nodes, tree->node[0], 0, 1);
-            FillBranch(nodes, tree->node[1], 1, 1);
-        }
-    private:
-        inline
-        static void FillBranch(Nodes& nodes, Node* node, const unsigned int index, const unsigned int depth)
-        {
-            if (depth < startNodeBits)
-            {
-                if (node->type == NodeType::branch)
-                {
-                    FillBranch(nodes, node->node[0], index, depth + 1);
-                    FillBranch(nodes, node->node[1], index | 1 << depth, depth + 1);
-                }
-                else
-                {
-                    node->depth = depth;
-                    FillLeaf(nodes, node, index, depth + 1);
-                    FillLeaf(nodes, node, index | 1 << depth, depth + 1);
-                }
-            }
-            else
-            {
-                node->depth = depth;
-                nodes[index] = node;
-            }
-        }
-        inline
-        static void FillLeaf(Nodes& nodes, Node* node, const unsigned int index, const unsigned int depth)
-        {
-            if (depth < startNodeBits)
-            {
-                FillLeaf(nodes, node, index, depth + 1);
-                FillLeaf(nodes, node, index | 1 << depth, depth + 1);
-            }
-            else
-            {
-                nodes[index] = node;
-            }
-        }
-    };
-    m_startNodes.resize(1 << startNodeBits,nullptr);
-    Helper::Fill(m_startNodes, m_tree);
-}
 

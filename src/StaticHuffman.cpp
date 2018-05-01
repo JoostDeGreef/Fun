@@ -92,13 +92,13 @@ void StaticHuffmanCompressor::WriteTree(BitFiFo& buffer) const
         {
             if (node.type == NodeType::branch)
             {
-                m_buffer.Push(0u, 1u);
+                m_buffer.PushBit(false);
                 WriteNode(*node.node[0]);
                 WriteNode(*node.node[1]);
             }
             else
             {
-                m_buffer.Push(1u, 1u);
+                m_buffer.PushBit(true);
                 m_buffer.Push(node.key, 9u);
             }
         }
@@ -216,7 +216,7 @@ bool StaticHuffmanDeCompressor::ReadTree()
             Node& node = m_nodeCache[m_index];
             ++m_index;
             node.count = 0;
-            node.type = m_buffer.Pop(1u) == 0 ? NodeType::branch : NodeType::leaf;
+            node.type = m_buffer.PopBit() == 0 ? NodeType::branch : NodeType::leaf;
             if (node.type == NodeType::branch)
             {
                 if ((node.node[0] = ReadNode()) == nullptr ||
@@ -281,7 +281,7 @@ void StaticHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer)
             unsigned int index;
             while(run && m_currentNode->type != NodeType::leaf)
             {
-                run = m_inBuffer.TryPop(index,1u);
+                run = m_inBuffer.TryPopBit(index);
                 if (run)
                 {
                     m_currentNode = m_currentNode->node[index];
