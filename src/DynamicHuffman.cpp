@@ -76,37 +76,40 @@ void DynamicHuffmanDeCompressor::DeCompress(std::vector<unsigned char>& ioBuffer
     bool run = true;
     while (run)
     {
-        if (m_currentNode->type == NodeType::branch)
+        unsigned int index;
+        while (m_currentNode->type == NodeType::branch)
         {
-            unsigned int index;
-            while (run && m_currentNode->type != NodeType::leaf)
+            run = m_buffer.TryPopBit(index);
+            if (run)
             {
-                run = m_buffer.TryPopBit(index);
-                if (run)
-                {
-                    m_currentNode = m_currentNode->node[index];
-                }
+                m_currentNode = m_currentNode->node[index];
+            }
+            else
+            {
+                break;
             }
         }
-        else
+        if (run)
         {
             switch (m_currentNode->key->value)
             {
             case keyNew:
-                run = run && m_buffer.Size() >= 8;
-                if (run)
+                if (m_buffer.TryPop(index, 8u))
                 {
-                    unsigned int c = m_buffer.Pop(8u);
-                    ioBuffer.emplace_back(static_cast<unsigned char>(c));
-                    assert(m_keys[c].count == 0);
+                    ioBuffer.emplace_back(static_cast<unsigned char>(index));
+                    assert(m_keys[index].count == 0);
                     m_keys[keyNew].count++;
-                    UpdateTree(c, true);
+                    UpdateTree(index, true);
                     m_currentNode = m_tree;
+                }
+                else
+                {
+                    run = false;
                 }
                 break;
             case keyEnd:
                 // see if the filling bits are 0
-                if (m_buffer.Size()<8)
+                if (m_buffer.Size() < 8)
                 {
                     unsigned int i = m_buffer.Pop(static_cast<unsigned int>(m_buffer.Size()));
                     if (i != 0)

@@ -69,6 +69,7 @@ protected:
     {
         Node* parent;
         Node* before;
+        Node* after;
         unsigned int count;
         NodeType type;
         union
@@ -133,37 +134,84 @@ protected:
         return m_nodes.back();
     }
 
-    bool UpdateTree(unsigned int key, const bool forceUpdate)
+    void UpdateTree(unsigned int key, const bool forceUpdate)
     {
-        // TODO: something is wrong here...
-        auto NodeOrderBroken = [](Node* node)
+        struct LocalFunctions
         {
-            return (node->before != nullptr && node->count > node->before->count);
-        };
-        auto UpdateNode = [&NodeOrderBroken](Node* node)
-        {
-            bool res = false;
-            while (node != nullptr)
+            // clear the Key bits in this subtree, adjust node order for nodes which share a parent.
+            static inline void UpdateSubtree(Node* node)
+            {
+                if (node->type == NodeType::branch)
+                {
+                    if (node->node[0]->count < node->node[1]->count)
+                    {
+                        std::swap(node->node[0], node->node[1]);
+                    }
+                    UpdateSubtree(node->node[0]);
+                    UpdateSubtree(node->node[1]);
+                }
+                else
+                {
+                    node->key->ClearBits();
+                }
+            };
+            // swap 2 (neighboring!) nodes
+            static inline void SwapNeighboringNodes(Node* a, Node* b)
+            {
+                if (a->parent != b->parent)
+                {
+                    a->parent->count += b->count - a->count;
+                    b->parent->count += a->count - b->count;
+                    unsigned int ia = a->parent->node[0] == a ? 0 : 1;
+                    unsigned int ib = b->parent->node[0] == b ? 0 : 1;
+                    std::swap(a->parent->node[ia], b->parent->node[ib]);
+                    std::swap(a->parent, b->parent);
+                    UpdateSubtree(a);
+                    UpdateSubtree(b);
+                }
+                // a->before  a  b  b->after 
+                a->before->after = b;
+                b->after->before = a;
+                a->after = b->after;
+                b->after = a;
+                b->before = a->before;
+                a->before = b;
+            };
+            // increase count for branch
+            static inline void IncreaseNodeCount(Node* node)
             {
                 node->count++;
-                res = res || NodeOrderBroken(node);
-                node = node->parent;
+                if (node->parent)
+                {
+                    IncreaseNodeCount(node->parent);
+                }
             }
-            return !res;
+            // swap nodes if needed
+            static inline void SwapNodesIfNeeded(Node* node)
+            {
+                while (node->before && node->before->count < node->count)
+                {
+                    LocalFunctions::SwapNeighboringNodes(node->before, node);
+                }
+                node = node->parent;
+                if (node && node->parent)
+                {
+                    SwapNodesIfNeeded(node);
+                }
+            }
         };
         // only update when there is a neighbor change detected
         m_keys[key].count++;
         if (forceUpdate)
         {
             BuildTree();
-            return true;
         }
-        else if( !UpdateNode(m_keys[key].node) )
+        else
         {
-            BuildTree();
-            return true;
+            Node* node = m_keys[key].node;
+            LocalFunctions::IncreaseNodeCount(node);
+            LocalFunctions::SwapNodesIfNeeded(node);
         }
-        return false;
     }
 
     void BuildTree()
@@ -202,13 +250,19 @@ protected:
             }
             m_tree = node;
         }
-        // fill before
+        // fill before & after
         {
             Node* prev = nullptr;
             for (auto& node : m_nodes)
             {
                 node->before = prev;
                 prev = node;
+            }
+            prev->after = nullptr;
+            while (prev->before)
+            {
+                prev->before->after = prev;
+                prev = prev->before;
             }
         }
     }

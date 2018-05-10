@@ -10,7 +10,8 @@
 
 enum class InputType
 {
-    Random,       // random values [0..10]
+    Random,       // random values [0..256)
+    RandomRange,  // random values [0..10)
     Sequence,     // repeat sequence (1,2,3,4,5,6)
     Sawtooth,     // sawtooth 1-50 times values (1,2,3,4,5,6)
     Single,       // one value (42)
@@ -44,6 +45,17 @@ protected:
             switch (type)
             {
             case InputType::Random:
+                {
+                    std::mt19937 rng;
+                    rng.seed(0); // make test repeatable
+                    std::uniform_int_distribution<unsigned int> dist(0, 256); //256
+                    for (size_t i = 0; i < m_size; ++i)
+                    {
+                        res.emplace_back(static_cast<unsigned char>(dist(rng)));
+                    }
+                }
+                break;
+            case InputType::RandomRange:
                 {
                     std::mt19937 rng;
                     rng.seed(0); // make test repeatable
@@ -124,6 +136,9 @@ protected:
             CompressorType::RLE_StaticHuffman,
             CompressorType::RLE_StaticBlockHuffman,
             CompressorType::RLE_DynamicHuffman,
+            CompressorType::Window_StaticHuffman,
+            CompressorType::Window_StaticBlockHuffman,
+            CompressorType::Window_DynamicHuffman,
         };
     }
 
@@ -132,6 +147,7 @@ protected:
         return
         {
             InputType::Random,
+            InputType::RandomRange,
             InputType::Sequence,
             InputType::Sawtooth,
             InputType::Single,
@@ -144,6 +160,7 @@ inline std::string to_string(InputType const& it)
     switch (it)
     {
     case InputType::Random:      return "Random";
+    case InputType::RandomRange: return "RandomRange";
     case InputType::Sequence:    return "Sequence";
     case InputType::Sawtooth:    return "Sawtooth";
     case InputType::Single:      return "Single";
@@ -162,15 +179,18 @@ inline std::string to_string(CompressorType const& ct)
 {
     switch (ct)
     {
-    case CompressorType::PassThrough:            return "PassThrough";
-    case CompressorType::RLE:                    return "RLE";
-    case CompressorType::Window:                 return "Window";
-    case CompressorType::StaticHuffman:          return "StaticHuffman";
-    case CompressorType::StaticBlockHuffman:     return "StaticBlockHuffman";
-    case CompressorType::DynamicHuffman:         return "DynamicHuffman";
-    case CompressorType::RLE_StaticHuffman:      return "RLE_StaticHuffman";
-    case CompressorType::RLE_StaticBlockHuffman: return "RLE_StaticBlockHuffman";
-    case CompressorType::RLE_DynamicHuffman:     return "RLE_DynamicHuffman";
+    case CompressorType::PassThrough:               return "PassThrough";
+    case CompressorType::RLE:                       return "RLE";
+    case CompressorType::Window:                    return "Window";
+    case CompressorType::StaticHuffman:             return "StaticHuffman";
+    case CompressorType::StaticBlockHuffman:        return "StaticBlockHuffman";
+    case CompressorType::DynamicHuffman:            return "DynamicHuffman";
+    case CompressorType::RLE_StaticHuffman:         return "RLE_StaticHuffman";
+    case CompressorType::RLE_StaticBlockHuffman:    return "RLE_StaticBlockHuffman";
+    case CompressorType::RLE_DynamicHuffman:        return "RLE_DynamicHuffman";
+    case CompressorType::Window_StaticHuffman:      return "Window_StaticHuffman";
+    case CompressorType::Window_StaticBlockHuffman: return "Window_StaticBlockHuffman";
+    case CompressorType::Window_DynamicHuffman:     return "Window_DynamicHuffman";
     default:
         assert(false);
         return  "Unknown(" + std::to_string(static_cast<int>(ct)) + ")";
@@ -217,8 +237,8 @@ TEST_F(CompressTest, Ratio)
             sw.Reset();
             deCompressor->Finish(deCompressed);
             auto t1 = sw.GetMS();
-            EXPECT_EQ(input.size(), deCompressed.size());
-            EXPECT_EQ(input, deCompressed);
+            ASSERT_EQ(input.size(), deCompressed.size()) << "CompressorType: " << compressorType << ", InputType: " << inputType;
+            ASSERT_EQ(input, deCompressed) << "CompressorType: " << compressorType << ", InputType: " << inputType;
             iter->second.emplace(inputType,Data((double)compressed.size() / (double)input.size(), t0, t1));
         }
     }

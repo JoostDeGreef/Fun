@@ -19,8 +19,7 @@ private:
 public:
     BitFiFo()
     {
-        m_data.emplace_back();
-        m_data.emplace_back();
+        m_data.emplace_back(0);
         Clear();
     }
 

@@ -181,15 +181,29 @@ pushbit:
 [    DEBUG ]     RLE_DynamicHuffman:   49 %      35 %       6 %     0 %   926/1046
 [       OK ] CompressTest.Ratio (13228 ms).
 
-NDEBUG (remove asserts from release mode)
+NDEBUG (remove asserts from release mode):
 [    DEBUG ]                         Random  Sequence  Sawtooth  Single   Time (ms)
 [    DEBUG ]            PassThrough:  100 %     100 %     100 %   100 %   0/0
 [    DEBUG ]                    RLE:  107 %     100 %      11 %     1 %   191/215
 [    DEBUG ]                 Window:  100 %     100 %     100 %   100 %   0/0
-[    DEBUG ]          StaticHuffman:   50 %      45 %      41 %    12 %   623/514
+[    DEBUG ]          StaticHuffman:   50 %      45 %      41 %    12 %   623/514     <- why did the % change?
 [    DEBUG ]     StaticBlockHuffman:   47 %      36 %      36 %    12 %   1243/606
 [    DEBUG ]         DynamicHuffman:   45 %      35 %      35 %    12 %   1623/1670
 [    DEBUG ]      RLE_StaticHuffman:   49 %      35 %       8 %     0 %   550/478
 [    DEBUG ] RLE_StaticBlockHuffman:   51 %      36 %       7 %     0 %   968/608
 [    DEBUG ]     RLE_DynamicHuffman:   49 %      35 %       6 %     0 %   849/958
 [       OK ] CompressTest.Ratio (12272 ms).
+
+Partial tree update:
+[    DEBUG ]                         Random  Sequence  Sawtooth  Single   Time (ms)
+[    DEBUG ]            PassThrough:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]                    RLE:  107 %     100 %      11 %     1 %   157/148
+[    DEBUG ]                 Window:  100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]          StaticHuffman:   48 %      37 %      37 %    12 %   613/484    <- why did the % change?
+[    DEBUG ]     StaticBlockHuffman:   47 %      36 %      36 %    12 %   1211/642
+[    DEBUG ]         DynamicHuffman:   45 %      35 %      35 %    12 %   1023/1090
+[    DEBUG ]      RLE_StaticHuffman:   49 %      35 %       8 %     0 %   501/417
+[    DEBUG ] RLE_StaticBlockHuffman:   51 %      36 %       7 %     0 %   918/572
+[    DEBUG ]     RLE_DynamicHuffman:   49 %      35 %       6 %     0 %   804/902
+[       OK ] CompressTest.Ratio (10795 ms).
+
