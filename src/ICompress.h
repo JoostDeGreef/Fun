@@ -24,13 +24,10 @@ enum class CompressorType
     RLE,
     Window,
     StaticHuffman,
-    StaticBlockHuffman,
     DynamicHuffman,
     RLE_StaticHuffman,
-    RLE_StaticBlockHuffman,
     RLE_DynamicHuffman,
     Window_StaticHuffman,
-    Window_StaticBlockHuffman,
     Window_DynamicHuffman,
 };
 

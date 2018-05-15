@@ -23,6 +23,7 @@ protected:
 #ifdef _DEBUG
     static const size_t m_size = 10000;
 #else
+//    static const size_t m_size = 10000;
     static const size_t m_size = 10000000;
 #endif
 
@@ -48,7 +49,7 @@ protected:
                 {
                     std::mt19937 rng;
                     rng.seed(0); // make test repeatable
-                    std::uniform_int_distribution<unsigned int> dist(0, 256); //256
+                    std::uniform_int_distribution<unsigned int> dist(0, 256);
                     for (size_t i = 0; i < m_size; ++i)
                     {
                         res.emplace_back(static_cast<unsigned char>(dist(rng)));
@@ -131,13 +132,10 @@ protected:
             CompressorType::RLE,
             CompressorType::Window,
             CompressorType::StaticHuffman,
-            CompressorType::StaticBlockHuffman,
             CompressorType::DynamicHuffman,
             CompressorType::RLE_StaticHuffman,
-            CompressorType::RLE_StaticBlockHuffman,
             CompressorType::RLE_DynamicHuffman,
             CompressorType::Window_StaticHuffman,
-            CompressorType::Window_StaticBlockHuffman,
             CompressorType::Window_DynamicHuffman,
         };
     }
@@ -183,13 +181,10 @@ inline std::string to_string(CompressorType const& ct)
     case CompressorType::RLE:                       return "RLE";
     case CompressorType::Window:                    return "Window";
     case CompressorType::StaticHuffman:             return "StaticHuffman";
-    case CompressorType::StaticBlockHuffman:        return "StaticBlockHuffman";
     case CompressorType::DynamicHuffman:            return "DynamicHuffman";
     case CompressorType::RLE_StaticHuffman:         return "RLE_StaticHuffman";
-    case CompressorType::RLE_StaticBlockHuffman:    return "RLE_StaticBlockHuffman";
     case CompressorType::RLE_DynamicHuffman:        return "RLE_DynamicHuffman";
     case CompressorType::Window_StaticHuffman:      return "Window_StaticHuffman";
-    case CompressorType::Window_StaticBlockHuffman: return "Window_StaticBlockHuffman";
     case CompressorType::Window_DynamicHuffman:     return "Window_DynamicHuffman";
     default:
         assert(false);

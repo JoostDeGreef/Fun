@@ -46,6 +46,11 @@ public:
         m_begin = other.m_begin;
         m_end = other.m_end;
     }
+    BitFiFo& operator = (const BitFiFo& other)
+    {
+        Copy(other);
+        return *this;
+    }
 
     void Clear()
     {

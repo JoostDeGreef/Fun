@@ -141,12 +141,13 @@ protected:
             // clear the Key bits in this subtree, adjust node order for nodes which share a parent.
             static inline void UpdateSubtree(Node* node)
             {
+                assert(node->parent != node);
+                assert(node->before != node);
+                assert(node->after != node);
+                assert(node->after != node->before);
+                assert(node->parent != node->after);
                 if (node->type == NodeType::branch)
                 {
-                    if (node->node[0]->count < node->node[1]->count)
-                    {
-                        std::swap(node->node[0], node->node[1]);
-                    }
                     UpdateSubtree(node->node[0]);
                     UpdateSubtree(node->node[1]);
                 }
@@ -155,49 +156,90 @@ protected:
                     node->key->ClearBits();
                 }
             };
-            // swap 2 (neighboring!) nodes
-            static inline void SwapNeighboringNodes(Node* a, Node* b)
+            // swap 2 nodes
+            static inline void SwapNodes(Node* a, Node* b)
             {
-                if (a->parent != b->parent)
+                assert(a->parent != a);
+                assert(a->before != a);
+                assert(a->after != a);
+                assert(a->after != a->before);
+                assert(a->parent != a->after);
+
+                assert(b->parent != b);
+                assert(b->before != b);
+                assert(b->after != b);
+                assert(b->after != b->before);
+                assert(b->parent != b->after);
+
+                assert(b->parent != a);
+                assert(a->parent != b);
+
+                std::swap(a->count, b->count);
+                std::swap(a->type, b->type);
+                if (a->type == NodeType::branch)
                 {
-                    a->parent->count += b->count - a->count;
-                    b->parent->count += a->count - b->count;
-                    unsigned int ia = a->parent->node[0] == a ? 0 : 1;
-                    unsigned int ib = b->parent->node[0] == b ? 0 : 1;
-                    std::swap(a->parent->node[ia], b->parent->node[ib]);
-                    std::swap(a->parent, b->parent);
-                    UpdateSubtree(a);
-                    UpdateSubtree(b);
+                    if (b->type == NodeType::branch)
+                    {
+                        std::swap(a->node, b->node);
+                        b->node[0]->parent = b;
+                        b->node[1]->parent = b;
+                    }
+                    else
+                    {
+                        Key* key = a->key;
+                        a->node[0] = b->node[0];
+                        a->node[1] = b->node[1];
+                        b->key = key;
+                        b->key->node = b;
+                    }
+                    a->node[0]->parent = a;
+                    a->node[1]->parent = a;
                 }
-                // a->before  a  b  b->after 
-                a->before->after = b;
-                b->after->before = a;
-                a->after = b->after;
-                b->after = a;
-                b->before = a->before;
-                a->before = b;
+                else
+                {
+                    if (b->type == NodeType::branch)
+                    {
+                        Key* key = b->key;
+                        b->node[0] = a->node[0];
+                        b->node[1] = a->node[1];
+                        a->key = key;
+                        a->key->node = a;
+                        b->node[0]->parent = b;
+                        b->node[1]->parent = b;
+                    }
+                    else
+                    {
+                        std::swap(a->key, b->key);
+                        a->key->node = a;
+                        b->key->node = b;
+                    }
+                }
+
+                UpdateSubtree(a);
+                UpdateSubtree(b);
             };
             // increase count for branch
             static inline void IncreaseNodeCount(Node* node)
             {
-                node->count++;
-                if (node->parent)
+                do
                 {
-                    IncreaseNodeCount(node->parent);
+                    node->count++;
+                    node = node->parent;
                 }
+                while(node);
             }
             // swap nodes if needed
             static inline void SwapNodesIfNeeded(Node* node)
             {
-                while (node->before && node->before->count < node->count)
+                do
                 {
-                    LocalFunctions::SwapNeighboringNodes(node->before, node);
-                }
-                node = node->parent;
-                if (node && node->parent)
-                {
-                    SwapNodesIfNeeded(node);
-                }
+                    while (node->before && node->before->count < node->count)
+                    {
+                        LocalFunctions::SwapNodes(node->before, node);
+                    }
+                    node = node->parent;
+                } 
+                while (node && node->parent);
             }
         };
         // only update when there is a neighbor change detected
@@ -264,6 +306,8 @@ protected:
                 prev->before->after = prev;
                 prev = prev->before;
             }
+            assert(m_tree->before == nullptr);
+            assert(m_tree->parent == nullptr);
         }
     }
 };

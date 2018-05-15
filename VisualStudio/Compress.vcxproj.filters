@@ -10,9 +10,6 @@
     <ClCompile Include="..\src\DynamicHuffman.cpp">
       <Filter>src\Compress\Huffman</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\StaticBlockHuffman.cpp">
-      <Filter>src\Compress\Huffman</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\StaticHuffman.cpp">
       <Filter>src\Compress\Huffman</Filter>
     </ClCompile>
@@ -40,12 +37,6 @@
       <Filter>src\Compress\Test</Filter>
     </ClInclude>
     <ClInclude Include="..\src\DynamicHuffman.h">
-      <Filter>src\Compress\Huffman</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\HuffmanCommon.h">
-      <Filter>src\Compress\Huffman</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\StaticBlockHuffman.h">
       <Filter>src\Compress\Huffman</Filter>
     </ClInclude>
     <ClInclude Include="..\src\StaticHuffman.h">

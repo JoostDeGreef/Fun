@@ -10,7 +10,30 @@ void RLECompressor::DumpCurrent(std::vector<unsigned char>& buffer)
 {
     while (m_count > 0)
     {
-        if (m_count == 1)
+        if (m_count == 2)
+        {
+            if (m_escape == m_current)
+            {
+                if (m_escape == m_count)
+                {
+                    for (decltype(m_count) i = 0; i < m_count; ++i)
+                    {
+                        buffer.emplace_back(m_escape);
+                        buffer.emplace_back(m_current);
+                    }
+                    m_count = 0;
+                    return;
+                }
+            }
+            else
+            {
+                buffer.emplace_back(m_current);
+                buffer.emplace_back(m_current);
+                m_count = 0;
+                return;
+            }
+        }
+        else if (m_count == 1)
         {
             if (m_escape == m_current)
             {
@@ -20,19 +43,6 @@ void RLECompressor::DumpCurrent(std::vector<unsigned char>& buffer)
             m_count = 0;
             return;
         }
-        else if (m_count == 2)
-        {
-            if (m_escape == m_current && m_escape != m_count)
-            {
-                for (decltype(m_count) i = 0; i < m_count; ++i)
-                {
-                    buffer.emplace_back(m_current);
-                }
-                m_count = 0;
-                return;
-            }
-        }
-        // todo: smarter split if m_count>255
         auto run = static_cast<unsigned char>(std::min(m_count,static_cast<decltype(m_count)>(255)));
         if (run == m_escape)
         {

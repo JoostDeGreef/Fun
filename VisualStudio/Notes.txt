@@ -207,3 +207,27 @@ Partial tree update:
 [    DEBUG ]     RLE_DynamicHuffman:   49 %      35 %       6 %     0 %   804/902
 [       OK ] CompressTest.Ratio (10795 ms).
 
+Added random test, updates to partial tree update:
+[    DEBUG ]                        RandomRange  Sequence  Sawtooth  Single   Time (ms)
+[    DEBUG ]           PassThrough:       100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]                   RLE:        99 %     100 %      11 %     1 %   167/150
+[    DEBUG ]                Window:       100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]         StaticHuffman:        47 %      37 %      37 %    12 %   623/469
+[    DEBUG ]        DynamicHuffman:        45 %      35 %      35 %    12 %   997/1134
+[    DEBUG ]     RLE_StaticHuffman:        46 %      35 %       8 %     0 %   498/394
+[    DEBUG ]    RLE_DynamicHuffman:        45 %      35 %       6 %     0 %   764/853
+[    DEBUG ]  Window_StaticHuffman:        45 %      35 %      35 %    12 %   609/456
+[    DEBUG ] Window_DynamicHuffman:        45 %      35 %      35 %    12 %   998/1122
+[       OK ] CompressTest.Ratio (10553 ms).
+
+[    DEBUG ]                        Random  RandomRange  Sequence  Sawtooth  Single   Time (ms)
+[    DEBUG ]           PassThrough:  100 %        100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]                   RLE:  100 %         99 %     100 %      11 %     1 %   231/191
+[    DEBUG ]                Window:  100 %        100 %     100 %     100 %   100 %   0/0
+[    DEBUG ]         StaticHuffman:  116 %         48 %      37 %      37 %    12 %   938/896
+[    DEBUG ]        DynamicHuffman:  100 %         45 %      35 %      35 %    12 %   2252/2173
+[    DEBUG ]     RLE_StaticHuffman:  102 %         46 %      35 %       8 %     0 %   820/693
+[    DEBUG ]    RLE_DynamicHuffman:  100 %         45 %      35 %       6 %     0 %   2136/1968
+[    DEBUG ]  Window_StaticHuffman:  102 %         45 %      35 %      35 %    12 %   877/717
+[    DEBUG ] Window_DynamicHuffman:  100 %         45 %      35 %      35 %    12 %   2272/2176
+[       OK ] CompressTest.Ratio (20211 ms).
