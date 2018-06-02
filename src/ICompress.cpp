@@ -4,12 +4,12 @@
 #include <algorithm>
 
 #include "ICompress.h"
+#include "BitFiFo.h"
 
 #include "PassThrough.h"
 #include "RLE.h"
 #include "Window.h"
 #include "StaticHuffman.h"
-#include "StaticBlockHuffman.h"
 #include "DynamicHuffman.h"
 #include "PipeLine.h"
 

@@ -5,6 +5,7 @@
 #include <deque>
 #include <inttypes.h>
 #include <type_traits>
+#include <cassert>
 
 class BitFiFo
 {

@@ -22,6 +22,7 @@ class CompressTest : public Test
 protected:
 #ifdef _DEBUG
     static const size_t m_size = 10000;
+//    static const size_t m_size = 100;
 #else
 //    static const size_t m_size = 10000;
     static const size_t m_size = 10000000;
@@ -128,15 +129,15 @@ protected:
     {
         return
         { 
-            CompressorType::PassThrough,
+            //CompressorType::PassThrough,
             CompressorType::RLE,
             CompressorType::Window,
-            CompressorType::StaticHuffman,
-            CompressorType::DynamicHuffman,
-            CompressorType::RLE_StaticHuffman,
-            CompressorType::RLE_DynamicHuffman,
-            CompressorType::Window_StaticHuffman,
-            CompressorType::Window_DynamicHuffman,
+            //CompressorType::StaticHuffman,
+            //CompressorType::DynamicHuffman,
+            //CompressorType::RLE_StaticHuffman,
+            //CompressorType::RLE_DynamicHuffman,
+            //CompressorType::Window_StaticHuffman,
+            //CompressorType::Window_DynamicHuffman,
         };
     }
 
