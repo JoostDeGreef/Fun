@@ -129,15 +129,15 @@ protected:
     {
         return
         { 
-            //CompressorType::PassThrough,
+            CompressorType::PassThrough,
             CompressorType::RLE,
             CompressorType::Window,
-            //CompressorType::StaticHuffman,
-            //CompressorType::DynamicHuffman,
-            //CompressorType::RLE_StaticHuffman,
-            //CompressorType::RLE_DynamicHuffman,
-            //CompressorType::Window_StaticHuffman,
-            //CompressorType::Window_DynamicHuffman,
+            CompressorType::StaticHuffman,
+            CompressorType::DynamicHuffman,
+            CompressorType::RLE_StaticHuffman,
+            CompressorType::RLE_DynamicHuffman,
+            CompressorType::Window_StaticHuffman,
+            CompressorType::Window_DynamicHuffman,
         };
     }
 

@@ -147,7 +147,7 @@ void WindowCompressor::Compress(std::vector<unsigned char>& ioBuffer)
         for(unsigned int dist = len+1;
             dist < 1 << 20 &&
             dist <= m_index &&
-            len<=261; // max window size, max len
+            len<261; // max window size, max len
             ++dist)
         {
             unsigned int currlen = 0;
