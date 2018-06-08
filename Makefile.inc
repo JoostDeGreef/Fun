@@ -1,9 +1,9 @@
 
 AR=ar
-CC=gcc
-CPP=g++
-CFLAGS=-W -Wall -O3 -DNDEBUG
-CPPFLAGS=-W -Wall -O3 -DNDEBUG
+CC=gcc-8
+CPP=g++-8
+CFLAGS=-W -Wall -O3 -DNDEBUG -std=c14
+CPPFLAGS=-W -Wall -O3 -DNDEBUG -std=c++14
 #CFLAGS=
 #CPPFLAGS=
 

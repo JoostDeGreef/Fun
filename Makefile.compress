@@ -14,7 +14,6 @@ src/ICompress.cpp \
 src/PassThrough.cpp \
 src/RLE.cpp \
 src/StaticHuffman.cpp \
-src/StaticBlockHuffman.cpp \
 src/Window.cpp
 
 include Makefile.inc
