@@ -164,26 +164,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\BitFiFo.cpp" />
-    <ClCompile Include="..\src\BitFiFoTest.cpp" />
-    <ClCompile Include="..\src\CompressTest.cpp" />
-    <ClCompile Include="..\src\DynamicHuffman.cpp" />
-    <ClCompile Include="..\src\ICompress.cpp" />
-    <ClCompile Include="..\src\PassThrough.cpp" />
-    <ClCompile Include="..\src\RLE.cpp" />
-    <ClCompile Include="..\src\StaticHuffman.cpp" />
-    <ClCompile Include="..\src\Window.cpp" />
+    <ClCompile Include="..\src\Compress\BitFiFo.cpp" />
+    <ClCompile Include="..\src\Compress\BitFiFoTest.cpp" />
+    <ClCompile Include="..\src\Compress\CompressTest.cpp" />
+    <ClCompile Include="..\src\Compress\DynamicHuffman.cpp" />
+    <ClCompile Include="..\src\Compress\ICompress.cpp" />
+    <ClCompile Include="..\src\Compress\RLE.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\BitFiFo.h" />
-    <ClInclude Include="..\src\CommonTestFunctionality.h" />
-    <ClInclude Include="..\src\DynamicHuffman.h" />
-    <ClInclude Include="..\src\ICompress.h" />
-    <ClInclude Include="..\src\PassThrough.h" />
-    <ClInclude Include="..\src\PipeLine.h" />
-    <ClInclude Include="..\src\RLE.h" />
-    <ClInclude Include="..\src\StaticHuffman.h" />
-    <ClInclude Include="..\src\Window.h" />
+    <ClInclude Include="..\src\Compress\BitFiFo.h" />
+    <ClInclude Include="..\src\Compress\CommonTestFunctionality.h" />
+    <ClInclude Include="..\src\Compress\DynamicHuffman.h" />
+    <ClInclude Include="..\src\Compress\ICompress.h" />
+    <ClInclude Include="..\src\Compress\PipeLine.h" />
+    <ClInclude Include="..\src\Compress\RLE.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

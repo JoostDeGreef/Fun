@@ -68,6 +68,7 @@ protected:
     struct Node
     {
         Node* parent;
+        uint64_t tick;
         unsigned int index;
         unsigned int count;
         NodeType type;
@@ -78,19 +79,21 @@ protected:
         };
         void SetKey(Key* k)
         {
-            type = NodeType::leaf;
+            tick = (uint64_t)-1;
             key = k;
             count = k->count;
+            type = NodeType::leaf;
             k->node = this;
         }
         void SetNodes(Node* n0, Node* n1)
         {
-            type = NodeType::branch;
+            tick = (uint64_t)-1;
             node[0] = n0;
             node[1] = n1;
+            count = n0->count + n1->count;
+            type = NodeType::branch;
             n0->parent = this;
             n1->parent = this;
-            count = n0->count + n1->count;
         }
     };
 
@@ -137,39 +140,28 @@ protected:
     {
         struct LocalFunctions
         {
-            static bool Compare(Node* a, Node* b)
-            {
-                return (a->count > b->count) || (a->count == b->count && a->index < b->index);
-            }
-            // reorder the nodes depending on count
-            // TODO: this should not be needed?
-            static inline void UpdateNodeOrder(Nodes& nodes)
-            {
-                // sort nodes
-                std::sort(nodes.begin(), nodes.end(), Compare);
-                // fill new index
-                for(unsigned int i=0;i<nodes.size();++i)
-                {
-                    nodes[i]->index = i;
-                }
-            }
             // recount immediate children
             static inline void UpdateCount(Node* node)
             {
-                node->count = node->node[0]->count + node->node[1]->count;
-                if (node->parent)
+                do
                 {
-                    UpdateCount(node->parent);
-                }
+                    node->count = node->node[0]->count + node->node[1]->count;
+                    node = node->parent;
+                } 
+                while (nullptr != node);
             }
             // clear the Key bits in this subtree, adjust node order for nodes which share a parent.
-            static inline void UpdateSubtree(Node* node)
+            static inline void UpdateSubtree(Node* node, const uint64_t tick)
             {
                 assert(node->parent != node);
+                if (node->tick == tick)
+                {
+                    return;
+                }
                 if (node->type == NodeType::branch)
                 {
-                    UpdateSubtree(node->node[0]);
-                    UpdateSubtree(node->node[1]);
+                    UpdateSubtree(node->node[0], tick);
+                    UpdateSubtree(node->node[1], tick);
                     assert(node->count == node->node[0]->count + node->node[1]->count);
                 }
                 else
@@ -179,7 +171,7 @@ protected:
                 }
             };
             // swap 2 nodes
-            static inline void SwapNodes(const unsigned int ai, const unsigned int bi, Nodes& nodes)
+            static inline void SwapNodes(const unsigned int ai, const unsigned int bi, Nodes& nodes, const uint64_t tick)
             {
                 Node* a = nodes[ai];
                 Node* b = nodes[bi];
@@ -223,8 +215,8 @@ protected:
                 b->index = ai;
                 a->index = bi;
 
-                UpdateSubtree(a);
-                UpdateSubtree(b);
+                UpdateSubtree(a, tick);
+                UpdateSubtree(b, tick);
             };
             // increase count for branch
             static inline void IncreaseNodeCount(Node* node)
@@ -237,21 +229,18 @@ protected:
                 while(node);
             }
             // swap nodes if needed
-            static inline void SwapNodesIfNeeded(Node* node, Nodes& nodes)
+            static inline void SwapNodesIfNeeded(Node* node, Nodes& nodes, Node* tree)
             {
-                if (node->parent)
+                uint64_t tick = tree->tick + 1;
+                while (node->parent)
                 {
-                    do
+                    unsigned int index = node->index;
+                    while (index > 1 && nodes[index]->count > nodes[index - 1]->count)
                     {
-                        unsigned int index = node->index;
-                        while (index > 1 && Compare(nodes[index], nodes[index - 1]))
-                        {
-                            LocalFunctions::SwapNodes(index - 1, index, nodes);
-                            index--;
-                        }
-                        node = node->parent;
-                    } while (node && node->parent);
-                    UpdateNodeOrder(nodes);
+                        LocalFunctions::SwapNodes(index - 1, index, nodes, tick);
+                        index--;
+                    }
+                    node = node->parent;
                 }
             }
         };
@@ -263,50 +252,9 @@ protected:
         }
         else
         {
-#ifdef _DEBUG
-            for (unsigned int i = 1; i<m_nodes.size(); ++i)
-            {
-                assert(m_nodes[i-1]->count >= m_nodes[i]->count);
-            }
-            for (Node* node : m_nodes)
-            {
-                if (node->type == NodeType::branch)
-                {
-                    assert(node->count == node->node[0]->count + node->node[1]->count);
-                }
-            }
-#endif // _DEBUG
             Node* node = m_keys[key].node;
             LocalFunctions::IncreaseNodeCount(node);
-#ifdef _DEBUG
-            for (Node* n : m_nodes)
-            {
-                if (n->type == NodeType::branch)
-                {
-                    assert(n->count == n->node[0]->count + n->node[1]->count);
-                }
-                else
-                {
-                    assert(n->count == n->key->count);
-                }
-            }
-#endif // _DEBUG
-            LocalFunctions::SwapNodesIfNeeded(node,m_nodes);
-#ifdef _DEBUG
-            //LocalFunctions::UpdateNodeOrder(m_nodes);
-            for (unsigned int i = 1; i<m_nodes.size(); ++i)
-            {
-                assert(m_nodes[i - 1]->count >= m_nodes[i]->count);
-            }
-            for (Node* n : m_nodes)
-            {
-                if (n->type == NodeType::branch)
-                {
-                    assert(n->count == n->node[0]->count + n->node[1]->count);
-                }
-            }
-            assert(m_tree->parent == nullptr);
-#endif // _DEBUG
+            LocalFunctions::SwapNodesIfNeeded(node,m_nodes,m_tree);
         }
     }
 
@@ -349,23 +297,10 @@ protected:
         // fill index
         for (unsigned int i = 0; i<m_nodes.size(); ++i)
         {
+            m_nodes[i]->tick = (uint64_t)-1;
             m_nodes[i]->index = i;
         }
         assert(m_tree->parent == nullptr);
-        // a few checks
-#ifdef _DEBUG
-        for (auto& node : m_nodes)
-        {
-            if (node->type == NodeType::branch)
-            {
-                assert(node->count == node->node[0]->count + node->node[1]->count);
-            }
-            else
-            {
-                assert(node->count == node->key->count);
-            }
-        }
-#endif // _DEBUG
     }
 };
 

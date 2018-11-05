@@ -3,6 +3,8 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <array>
+#include <iterator>
 
 class ICompressor
 {
@@ -18,28 +20,15 @@ public:
     virtual void Finish(std::vector<unsigned char>& ioBuffer) = 0;
 };
 
-enum class CompressorType
-{
-    PassThrough,
-    RLE,
-    Window,
-    StaticHuffman,
-    DynamicHuffman,
-    RLE_StaticHuffman,
-    RLE_DynamicHuffman,
-    Window_StaticHuffman,
-    Window_DynamicHuffman,
-};
-
 class CompressorFactory
 {
 public:
-    static std::shared_ptr<ICompressor> Create(const CompressorType compressorType);
+    static std::shared_ptr<ICompressor> Create();
 };
 
 class DeCompressorFactory
 {
 public:
-    static std::shared_ptr<IDeCompressor> Create(const CompressorType compressorType);
+    static std::shared_ptr<IDeCompressor> Create();
 };
 

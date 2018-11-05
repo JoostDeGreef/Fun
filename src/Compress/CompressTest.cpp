@@ -24,7 +24,7 @@ protected:
     static const size_t m_size = 10000;
 //    static const size_t m_size = 100;
 #else
-//    static const size_t m_size = 10000;
+//    static const size_t m_size = 100000;
     static const size_t m_size = 10000000;
 #endif
 
@@ -125,22 +125,6 @@ protected:
         return iter->second;
     }
 
-    std::vector<CompressorType> GetCompressorTypes() const
-    {
-        return
-        { 
-            CompressorType::PassThrough,
-            CompressorType::RLE,
-            CompressorType::Window,
-            CompressorType::StaticHuffman,
-            CompressorType::DynamicHuffman,
-            CompressorType::RLE_StaticHuffman,
-            CompressorType::RLE_DynamicHuffman,
-            CompressorType::Window_StaticHuffman,
-            CompressorType::Window_DynamicHuffman,
-        };
-    }
-
     std::vector<InputType> GetInputTypes() const
     {
         return
@@ -174,30 +158,6 @@ inline std::ostream& operator<<(std::ostream& stream, InputType const& it)
     return stream << to_string(it);
 }
 
-inline std::string to_string(CompressorType const& ct)
-{
-    switch (ct)
-    {
-    case CompressorType::PassThrough:               return "PassThrough";
-    case CompressorType::RLE:                       return "RLE";
-    case CompressorType::Window:                    return "Window";
-    case CompressorType::StaticHuffman:             return "StaticHuffman";
-    case CompressorType::DynamicHuffman:            return "DynamicHuffman";
-    case CompressorType::RLE_StaticHuffman:         return "RLE_StaticHuffman";
-    case CompressorType::RLE_DynamicHuffman:        return "RLE_DynamicHuffman";
-    case CompressorType::Window_StaticHuffman:      return "Window_StaticHuffman";
-    case CompressorType::Window_DynamicHuffman:     return "Window_DynamicHuffman";
-    default:
-        assert(false);
-        return  "Unknown(" + std::to_string(static_cast<int>(ct)) + ")";
-    }
-}
-
-inline std::ostream& operator<<(std::ostream& stream, CompressorType const& ct)
-{
-    return stream << to_string(ct);
-}
-
 TEST_F(CompressTest, Ratio)
 {
     class Data
@@ -214,76 +174,61 @@ TEST_F(CompressTest, Ratio)
         long long m_msDeCompres;
     };
     StopWatch sw;
-    size_t compressorTypeLength = 0;
-    std::map<CompressorType, std::map<InputType, Data>> info;
-    for (auto compressorType : GetCompressorTypes())
+    std::map<InputType, Data> info;
+    for (auto inputType : GetInputTypes())
     {
-        compressorTypeLength = std::max(compressorTypeLength,to_string(compressorType).size());
-        auto iter = info.emplace(compressorType, std::map<InputType, Data>()).first;
-        for (auto inputType : GetInputTypes())
-        {
-            std::vector<unsigned char> input = GetInputData(inputType);
-            auto compressor = CompressorFactory::Create(compressorType);
-            auto deCompressor = DeCompressorFactory::Create(compressorType);
-            auto compressed = input;
-            sw.Reset();
-            compressor->Finish(compressed);
-            auto t0 = sw.GetMS();
-            auto deCompressed = compressed;
-            sw.Reset();
-            deCompressor->Finish(deCompressed);
-            auto t1 = sw.GetMS();
-            ASSERT_EQ(input.size(), deCompressed.size()) << "CompressorType: " << compressorType << ", InputType: " << inputType;
-            ASSERT_EQ(input, deCompressed) << "CompressorType: " << compressorType << ", InputType: " << inputType;
-            iter->second.emplace(inputType,Data((double)compressed.size() / (double)input.size(), t0, t1));
-        }
+        std::vector<unsigned char> input = GetInputData(inputType);
+        auto compressor = CompressorFactory::Create();
+        auto deCompressor = DeCompressorFactory::Create();
+        auto compressed = input;
+        sw.Reset();
+        compressor->Finish(compressed);
+        auto t0 = sw.GetMS();
+        auto deCompressed = compressed;
+        sw.Reset();
+        deCompressor->Finish(deCompressed);
+        auto t1 = sw.GetMS();
+        ASSERT_EQ(input.size(), deCompressed.size()) << "InputType: " << inputType;
+        ASSERT_EQ(input, deCompressed) << "InputType: " << inputType;
+        info.emplace(inputType,Data((double)compressed.size() / (double)input.size(), t0, t1));
     }
     std::stringstream s;
-    s << std::string(compressorTypeLength, ' ');
-    for (auto it : info.begin()->second)
+    for (auto it : info)
     {
         s << "  " << it.first;
     }
     s << "   Time (ms)";
     SUCCEED() << s.str();
     std::cout << s.str() << std::endl;
-    for(auto ct: info)
+    long long t0 = 0, t1 = 0;
+    std::stringstream().swap(s);
+    s << "  ";
+    for (auto it : info)
     {
-        long long t0 = 0, t1 = 0;
-        std::stringstream().swap(s);
-        std::string c = to_string(ct.first);
-        s << std::string(compressorTypeLength - c.size(),' ') << c << ": ";
-        for (auto it : ct.second)
-        {
-            size_t l = to_string(it.first).size();
-            auto r = std::to_string(static_cast<int>(it.second.m_ratio * 100));
-            s << std::string(l-r.size()-2, ' ') << r << " %  ";
-            t0 += it.second.m_msCompres;
-            t1 += it.second.m_msDeCompres;
-        }
-        s << " " << t0 << "/" << t1;
-        SUCCEED() << s.str();
-        std::cout << s.str() << std::endl;
+        size_t l = to_string(it.first).size();
+        auto r = std::to_string(static_cast<int>(it.second.m_ratio * 100));
+        s << std::string(l-r.size()-2, ' ') << r << " %  ";
+        t0 += it.second.m_msCompres;
+        t1 += it.second.m_msDeCompres;
     }
+    s << " " << t0 << "/" << t1;
+    SUCCEED() << s.str();
+    std::cout << s.str() << std::endl;
 }
 
 TEST_F(CompressTest, DISABLED_RatioOri)
 {
-    for (auto compressorType : GetCompressorTypes())
+    for (auto inputType : GetInputTypes())
     {
-        SUCCEED() << "compressor type = " << compressorType;
-        for (auto inputType : GetInputTypes())
-        {
-            std::vector<unsigned char> input = GetInputData(inputType);
-            auto compressor = CompressorFactory::Create(compressorType);
-            auto deCompressor = DeCompressorFactory::Create(compressorType);
-            auto compressed = input;
-            compressor->Finish(compressed);
-            auto deCompressed = compressed;
-            deCompressor->Finish(deCompressed);
-            EXPECT_EQ(input, deCompressed);
-            SUCCEED() << "  ratio for " << inputType << ": " << (double)compressed.size() / (double)input.size();
-        }
+        std::vector<unsigned char> input = GetInputData(inputType);
+        auto compressor = CompressorFactory::Create();
+        auto deCompressor = DeCompressorFactory::Create();
+        auto compressed = input;
+        compressor->Finish(compressed);
+        auto deCompressed = compressed;
+        deCompressor->Finish(deCompressed);
+        EXPECT_EQ(input, deCompressed);
+        SUCCEED() << "  ratio for " << inputType << ": " << (double)compressed.size() / (double)input.size();
     }
 }
 
