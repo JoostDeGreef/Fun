@@ -42,12 +42,16 @@ public:
     Operator()
         : m_value(Value::Uninitialized)
     {}
-    explicit Operator(const Value value)
+    //explicit 
+    Operator(const Value value)
         : m_value(value)
     {}
     Operator(const Operator& other)
         : m_value(other.m_value)
     {}
+
+    Operator& operator = (const Operator& other) { m_value = other.m_value; return *this; }
+    Operator& operator = (const Value value) { m_value = value; return *this; }
 
     bool operator == (const Operator& other) const { return m_value == other.m_value; }
     bool operator != (const Operator& other) const { return m_value != other.m_value; }

@@ -6,8 +6,11 @@ using namespace std;
 void Parser::Process(const std::string& input)
 {
     auto symbols = ExtractSymbols(input);
-    // Merge symbols
-    // Build tree
+    auto trees = BuildTrees(symbols);
+    for (const auto& tree : trees)
+    {
+        tree.Execute(m_symbols);
+    }
 }
 
 enum class TextType
@@ -122,8 +125,43 @@ std::vector<Symbol> Parser::ExtractSymbols(const std::string& input) const
     }
     if (text != TextType::None)
     {
-        // TODO
+        // TODO: unterminated string? 
     }
     StoreToken();
     return res;
+}
+
+std::vector<ParserTree> Parser::BuildTrees(std::vector<Symbol>& symbols) const
+{
+    std::vector<ParserTree> trees;
+    ParserTree tree;
+    auto PushTree = [&trees](ParserTree& tree)
+    {
+        if (!tree.Empty())
+        {
+            trees.emplace_back();
+            trees.back().Swap(tree);
+        }
+    };
+    for (const auto& symbol : symbols)
+    {
+
+    }
+    PushTree(tree);
+    return trees;
+}
+
+bool ParserTree::Empty() const
+{
+	return false;
+}
+
+void ParserTree::Swap(ParserTree& other)
+{
+
+}
+
+void ParserTree::Execute(SymbolCache& symbols) const
+{
+
 }

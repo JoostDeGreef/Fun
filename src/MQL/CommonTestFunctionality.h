@@ -5,6 +5,7 @@
 #include "gtest/gtest.h"
 using namespace testing;
 
+#include "grid.h"
 #include "Parser.h"
 #include "Symbol.h"
 #include "Operator.h"

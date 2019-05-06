@@ -44,5 +44,8 @@ protected:
 
 TEST_F(OperatorTest, Init)
 {
+    Operator op0(Operator::Value::Plus);
+    Operator op1 = Operator::Value::Plus;
+    EXPECT_TRUE(op0 == op1);
 }
 

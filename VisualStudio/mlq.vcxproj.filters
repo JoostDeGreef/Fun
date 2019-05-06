@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\MQL\GridTest.cpp" />
+    <ClCompile Include="..\src\MQL\Operator.cpp" />
+    <ClCompile Include="..\src\MQL\OperatorTest.cpp" />
+    <ClCompile Include="..\src\MQL\ParserTest.cpp" />
+    <ClCompile Include="..\src\MQL\Parser.cpp" />
+    <ClCompile Include="..\src\MQL\Symbol.cpp" />
+    <ClCompile Include="..\src\MQL\SymbolTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\MQL\CommonTestFunctionality.h" />
+    <ClInclude Include="..\src\MQL\grid.h" />
+    <ClInclude Include="..\src\MQL\Operator.h" />
+    <ClInclude Include="..\src\MQL\Parser.h" />
+    <ClInclude Include="..\src\MQL\Symbol.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="operators">
+      <UniqueIdentifier>{abbbd09e-17e4-460a-8452-227593dfc330}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

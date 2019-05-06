@@ -1,6 +1,7 @@
-#include <boost/bimap.hpp>
+#include <map>
 
 #include "Operator.h"
+#include "grid.h"
 
 using namespace std;
 
@@ -8,7 +9,7 @@ namespace
 {
     using Value = Operator::Value;
 
-    boost::bimap<std::string, Value> operators =
+    grid<std::string, Value> operators =
     {
         { "=",   Value::Assign           },
         { "==",  Value::Equal            },
@@ -40,10 +41,10 @@ namespace
 Operator Operator::Parse(const std::string& input)
 {
     Value value = Value::Invalid;
-    auto iter = operators.find(input);
-    if (iter != operators.end())
+    auto iter = operators.find<0>(input);
+    if (iter)
     {
-        value = iter->right;
+        value = iter.get_field<1>();
     }
     return Operator{ value };
 }
@@ -55,10 +56,10 @@ Operator Operator::Parse(const std::string::value_type input)
 const std::string Operator::GetText() const
 {
     std::string op = "";
-    auto iter = operators.find(m_value);
-    if (iter != operators.end())
+    auto iter = operators.find<1>(m_value);
+    if (iter)
     {
-        op = iter->left;
+        op = iter.get_field<0>();
     }
     return op;
 }

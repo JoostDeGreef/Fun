@@ -20,10 +20,10 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{44D6D9EC-70FF-49E8-960B-474CEF1ABFB4}</ProjectGuid>
-    <RootNamespace>Compress</RootNamespace>
+    <ProjectGuid>{44D6D9EC-70FF-49E8-960B-474CEF1ABFB5}</ProjectGuid>
+    <RootNamespace>MQL</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Compress</ProjectName>
+    <ProjectName>MQL</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -164,20 +164,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Compress\BitFiFo.cpp" />
-    <ClCompile Include="..\src\Compress\BitFiFoTest.cpp" />
-    <ClCompile Include="..\src\Compress\CompressTest.cpp" />
-    <ClCompile Include="..\src\Compress\DynamicHuffman.cpp" />
-    <ClCompile Include="..\src\Compress\ICompress.cpp" />
-    <ClCompile Include="..\src\Compress\RLE.cpp" />
+    <ClCompile Include="..\src\MQL\GridTest.cpp" />
+    <ClCompile Include="..\src\MQL\Operator.cpp" />
+    <ClCompile Include="..\src\MQL\OperatorTest.cpp" />
+    <ClCompile Include="..\src\MQL\ParserTest.cpp" />
+    <ClCompile Include="..\src\MQL\Parser.cpp" />
+    <ClCompile Include="..\src\MQL\Symbol.cpp" />
+    <ClCompile Include="..\src\MQL\SymbolTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Compress\BitFiFo.h" />
-    <ClInclude Include="..\src\Compress\CommonTestFunctionality.h" />
-    <ClInclude Include="..\src\Compress\DynamicHuffman.h" />
-    <ClInclude Include="..\src\Compress\ICompress.h" />
-    <ClInclude Include="..\src\Compress\PipeLine.h" />
-    <ClInclude Include="..\src\Compress\RLE.h" />
+    <ClInclude Include="..\src\MQL\CommonTestFunctionality.h" />
+    <ClInclude Include="..\src\MQL\grid.h" />
+    <ClInclude Include="..\src\MQL\Operator.h" />
+    <ClInclude Include="..\src\MQL\Parser.h" />
+    <ClInclude Include="..\src\MQL\Symbol.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
