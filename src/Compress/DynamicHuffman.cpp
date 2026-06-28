@@ -1,7 +1,8 @@
-#include <algorithm>
+﻿#include <algorithm>
 #include <array>
 #include <cassert>
 #include <deque>
+#include <stdexcept>
 #include <string>
 
 #include "DynamicHuffman.h"

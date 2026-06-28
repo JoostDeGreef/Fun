@@ -11,7 +11,15 @@
 class ParserProxy : public Parser
 {
 public:
-    using Parser::ExtractSymbols;
+	ParserProxy()
+		: m_operatorRegistry()
+		, Parser(m_operatorRegistry)
+	{}
+
+    using Parser::Parse;
+
+private:
+	OperatorRegistry m_operatorRegistry;
 };
 
 class ParserTest : public Test
@@ -51,7 +59,10 @@ protected:
 TEST_F(ParserTest, Symbols)
 {
     ParserProxy parser;
-    auto res = parser.ExtractSymbols("a = '1';");
-    ASSERT_EQ(4, res.size());
+    auto res = parser.Parse("1 + 2");
+    ASSERT_EQ(1, res.size());
+	IValuePtr v = res.front()->Execute();
+	Value::Integer* i = (Value::Integer*) & (*v);
+	EXPECT_EQ(3, i->m_data);
 }
 

@@ -7,28 +7,30 @@ using namespace testing;
 
 #include "grid.h"
 #include "Parser.h"
-#include "Symbol.h"
+//#include "Symbol.h"
 #include "Operator.h"
+#include "OperatorRegistry.h"
+#include "Value.h"
 
-inline std::string to_string(Symbol const& s)
-{
-    switch (s.GetType())
-    {
-    case Symbol::Type::HardText: return "Symbol::HardText(" + s.GetHardText() + ")";
-    case Symbol::Type::SoftText: return "Symbol::SoftText(" + s.GetSoftText() + ")";
-    case Symbol::Type::Keyword: return "Symbol::Keyword(" + s.GetKeyword() + ")";
-    case Symbol::Type::Operator: return "Symbol::Operator(" + s.GetOperator().GetText() + ")";
-    case Symbol::Type::Uninitialized: return "Symbol::Uninitialized()";
-    default:
-        assert(false);
-        return "Unknown(" + std::to_string(static_cast<int>(s.GetType())) + ")";
-    }
-}
+//inline std::string to_string(Symbol const& s)
+//{
+//    switch (s.GetType())
+//    {
+//    case Symbol::Type::HardText: return "Symbol::HardText(" + s.GetHardText() + ")";
+//    case Symbol::Type::SoftText: return "Symbol::SoftText(" + s.GetSoftText() + ")";
+//    case Symbol::Type::Keyword: return "Symbol::Keyword(" + s.GetKeyword() + ")";
+//    case Symbol::Type::Operator: return "Symbol::Operator(" + s.GetOperator().GetText() + ")";
+//    case Symbol::Type::Uninitialized: return "Symbol::Uninitialized()";
+//    default:
+//        assert(false);
+//        return "Unknown(" + std::to_string(static_cast<int>(s.GetType())) + ")";
+//    }
+//}
 
-inline std::ostream& operator<<(std::ostream& stream, Symbol const& s)
-{
-    return stream << to_string(s);
-}
+//inline std::ostream& operator<<(std::ostream& stream, Symbol const& s)
+//{
+//    return stream << to_string(s);
+//}
 
 class StopWatch
 {

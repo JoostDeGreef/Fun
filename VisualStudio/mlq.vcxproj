@@ -166,18 +166,42 @@
   <ItemGroup>
     <ClCompile Include="..\src\MQL\GridTest.cpp" />
     <ClCompile Include="..\src\MQL\Operator.cpp" />
+    <ClCompile Include="..\src\MQL\OperatorRegistry.cpp" />
+    <ClCompile Include="..\src\MQL\OperatorRegistryTest.cpp" />
     <ClCompile Include="..\src\MQL\OperatorTest.cpp" />
-    <ClCompile Include="..\src\MQL\ParserTest.cpp" />
-    <ClCompile Include="..\src\MQL\Parser.cpp" />
-    <ClCompile Include="..\src\MQL\Symbol.cpp" />
-    <ClCompile Include="..\src\MQL\SymbolTest.cpp" />
+    <ClCompile Include="..\src\MQL\ParserTest.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\MQL\Parser.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\MQL\Symbol.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\MQL\SymbolTest.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\MQL\Value.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\MQL\CommonTestFunctionality.h" />
     <ClInclude Include="..\src\MQL\grid.h" />
+    <ClInclude Include="..\src\MQL\IOperator.h" />
+    <ClInclude Include="..\src\MQL\IValue.h" />
     <ClInclude Include="..\src\MQL\Operator.h" />
-    <ClInclude Include="..\src\MQL\Parser.h" />
-    <ClInclude Include="..\src\MQL\Symbol.h" />
+    <ClInclude Include="..\src\MQL\OperatorRegistry.h" />
+    <ClInclude Include="..\src\MQL\Parser.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\Symbol.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\Value.h" />
+    <ClInclude Include="..\src\MQL\Values\Operators\Add.h" />
+    <ClInclude Include="..\src\MQL\Values\Operators\IFunction.h" />
+    <ClInclude Include="..\src\MQL\Values\Operators\Minus.h" />
+    <ClInclude Include="..\src\MQL\Values\Operators\Plus.h" />
+    <ClInclude Include="..\src\MQL\Values\Operators\Subtract.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

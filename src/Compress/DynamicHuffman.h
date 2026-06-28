@@ -135,6 +135,12 @@ protected:
         m_nodes.emplace_back(&m_nodeCache[m_nodes.size()]);
         return m_nodes.back();
     }
+	inline void AddKeyNode(Key * key)
+	{
+		Node & node = m_nodeCache[m_nodes.size()];
+		node.SetKey(key);
+		m_nodes.emplace_back(&node);
+	}
 
     void UpdateTree(unsigned int key, const bool forceUpdate)
     {
@@ -267,8 +273,7 @@ protected:
             if (key.count > 0)
             {
                 key.ClearBits();
-                Node* node = AddNode();
-                node->SetKey(&key);
+				AddKeyNode(&key);
             }
         }
         // sort nodes, these are all 'key nodes'

@@ -19,6 +19,9 @@
     <ClCompile Include="..\src\Compress\ICompress.cpp">
       <Filter>src\Compress\Generic</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Compress\HuffmanTest.cpp">
+      <Filter>src\Compress\Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Compress\BitFiFo.h">
@@ -38,6 +41,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Compress\ICompress.h">
       <Filter>src\Compress\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Compress\Huffman.h">
+      <Filter>src\Compress\Huffman</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

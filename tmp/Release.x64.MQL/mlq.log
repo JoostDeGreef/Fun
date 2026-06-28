@@ -1,0 +1,10 @@
+﻿  ParserTest.cpp
+  Parser.cpp
+c:\src\fun\src\mql\parser.cpp(5): warning C4100: 'other': unreferenced formal parameter
+c:\src\fun\src\mql\parser.cpp(7): warning C4100: 'other': unreferenced formal parameter
+c:\src\fun\src\mql\parser.cpp(9): warning C4100: 'other': unreferenced formal parameter
+c:\src\fun\src\mql\parser.cpp(13): warning C4100: 'other': unreferenced formal parameter
+c:\src\fun\src\mql\parser.cpp(23): warning C4100: 'input': unreferenced formal parameter
+  Generating code
+  Finished generating code
+  mlq.vcxproj -> C:\Src\Fun\VisualStudio\..\bin\MQL.Release.x64.exe

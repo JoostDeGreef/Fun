@@ -2,23 +2,71 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\src\MQL\GridTest.cpp" />
-    <ClCompile Include="..\src\MQL\Operator.cpp" />
-    <ClCompile Include="..\src\MQL\OperatorTest.cpp" />
     <ClCompile Include="..\src\MQL\ParserTest.cpp" />
     <ClCompile Include="..\src\MQL\Parser.cpp" />
     <ClCompile Include="..\src\MQL\Symbol.cpp" />
     <ClCompile Include="..\src\MQL\SymbolTest.cpp" />
+    <ClCompile Include="..\src\MQL\Operator.cpp">
+      <Filter>operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MQL\OperatorTest.cpp">
+      <Filter>operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MQL\OperatorRegistry.cpp">
+      <Filter>operators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MQL\Value.cpp">
+      <Filter>values</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MQL\OperatorRegistryTest.cpp">
+      <Filter>operators</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\MQL\CommonTestFunctionality.h" />
     <ClInclude Include="..\src\MQL\grid.h" />
-    <ClInclude Include="..\src\MQL\Operator.h" />
     <ClInclude Include="..\src\MQL\Parser.h" />
     <ClInclude Include="..\src\MQL\Symbol.h" />
+    <ClInclude Include="..\src\MQL\IOperator.h">
+      <Filter>operators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\Operator.h">
+      <Filter>operators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\OperatorRegistry.h">
+      <Filter>operators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\IValue.h">
+      <Filter>values</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\Value.h">
+      <Filter>values</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\Values\Operators\Plus.h">
+      <Filter>values\operators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\Values\Operators\Subtract.h">
+      <Filter>values\operators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\Values\Operators\Add.h">
+      <Filter>values\operators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\Values\Operators\Minus.h">
+      <Filter>values\operators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MQL\Values\Operators\IFunction.h">
+      <Filter>values\operators</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="operators">
       <UniqueIdentifier>{abbbd09e-17e4-460a-8452-227593dfc330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="values">
+      <UniqueIdentifier>{b11ac012-275e-4570-b284-303f357dbf78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="values\operators">
+      <UniqueIdentifier>{db94d33e-007b-4d55-862c-4bd3e4333277}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

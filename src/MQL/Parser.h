@@ -3,33 +3,37 @@
 #include <vector>
 #include <string>
 #include <cassert>
+#include <stack>
 
-#include "Symbol.h"
-
-class SymbolCache
-{
-
-};
-
-class ParserTree
-{
-public:
-    bool Empty() const;
-    void Swap(ParserTree& other);
-    void Execute(SymbolCache& symbols) const;
-};
+#include "OperatorRegistry.h"
 
 class Parser
 {
-public:
-    void Process(const std::string& input);
 protected:
-    // protected member functions are not part of the public API,
-    // but can be covered by unit tests.
-    std::vector<Symbol> ExtractSymbols(const std::string& input) const;
+	enum class TextType
+	{
+		None,
+		Single,
+		Double,
+	};
 
-    std::vector<ParserTree> BuildTrees(std::vector<Symbol>& symbols) const;
+public:
+	explicit
+	Parser(OperatorRegistry & operatorRegistry);
+	
+	std::vector<IOperatorPtr> Parse(const std::string& input);
+
+protected:
+	void HandleText(const char c, const char t);
 
 private:
-    SymbolCache m_symbols;
+	OperatorRegistry& m_operatorRegistry;
+	std::stack<IOperatorPtr> m_operatorStack;
+	std::stack<IOperatorPtr> m_expressionStack;
+
+	// parser state
+	OperatorRegistry::Tokens m_tokens;
+	std::string m_token;
+	TextType m_text;
+	bool m_escaped;
 };

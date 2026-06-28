@@ -1,0 +1,7 @@
+﻿  GridTest.cpp
+  Operator.cpp
+  OperatorTest.cpp
+  ParserTest.cpp
+  SymbolTest.cpp
+  Generating Code...
+  mlq.vcxproj -> C:\Src\Fun\VisualStudio\..\bin\MQL.Debug.x64.exe

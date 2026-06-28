@@ -1,0 +1,9 @@
+﻿  BitFiFo.cpp
+  BitFiFoTest.cpp
+  CompressTest.cpp
+  DynamicHuffman.cpp
+  ICompress.cpp
+  RLE.cpp
+  Generating code
+  Finished generating code
+  Compress.vcxproj -> C:\Src\Fun\VisualStudio\..\bin\Compress.Release.x64.exe

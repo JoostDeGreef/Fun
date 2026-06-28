@@ -1,0 +1,13 @@
+﻿  BitFiFo.cpp
+  DynamicHuffman.cpp
+  HuffmanTest.cpp
+C:\Src\Fun\src\Compress\Huffman.h(296,29): warning C4100: 'length': unreferenced formal parameter
+C:\Src\Fun\src\Compress\Huffman.h(296,19): warning C4100: 'data': unreferenced formal parameter
+  ICompress.cpp
+  RLE.cpp
+  Generating Code...
+GoogleTest.Debug.Win32.lib(ConsoleOutput.obj) : warning LNK4099: PDB 'GoogleTest.pdb' was not found with 'GoogleTest.Debug.Win32.lib(ConsoleOutput.obj)' or at 'C:\Src\Fun\bin\GoogleTest.pdb'; linking object as if no debug info
+GoogleTest.Debug.Win32.lib(gtest-all.obj) : warning LNK4099: PDB 'GoogleTest.pdb' was not found with 'GoogleTest.Debug.Win32.lib(gtest-all.obj)' or at 'C:\Src\Fun\bin\GoogleTest.pdb'; linking object as if no debug info
+GoogleTest.Debug.Win32.lib(GoogleTestMain.obj) : warning LNK4099: PDB 'GoogleTest.pdb' was not found with 'GoogleTest.Debug.Win32.lib(GoogleTestMain.obj)' or at 'C:\Src\Fun\bin\GoogleTest.pdb'; linking object as if no debug info
+GoogleTest.Debug.Win32.lib(VisualStudioOutput.obj) : warning LNK4099: PDB 'GoogleTest.pdb' was not found with 'GoogleTest.Debug.Win32.lib(VisualStudioOutput.obj)' or at 'C:\Src\Fun\bin\GoogleTest.pdb'; linking object as if no debug info
+  Compress.vcxproj -> C:\Src\Fun\bin\Compress.Debug.Win32.exe

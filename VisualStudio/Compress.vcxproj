@@ -165,9 +165,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Compress\BitFiFo.cpp" />
-    <ClCompile Include="..\src\Compress\BitFiFoTest.cpp" />
-    <ClCompile Include="..\src\Compress\CompressTest.cpp" />
+    <ClCompile Include="..\src\Compress\BitFiFoTest.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Compress\CompressTest.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\Compress\DynamicHuffman.cpp" />
+    <ClCompile Include="..\src\Compress\HuffmanTest.cpp" />
     <ClCompile Include="..\src\Compress\ICompress.cpp" />
     <ClCompile Include="..\src\Compress\RLE.cpp" />
   </ItemGroup>
@@ -175,6 +180,7 @@
     <ClInclude Include="..\src\Compress\BitFiFo.h" />
     <ClInclude Include="..\src\Compress\CommonTestFunctionality.h" />
     <ClInclude Include="..\src\Compress\DynamicHuffman.h" />
+    <ClInclude Include="..\src\Compress\Huffman.h" />
     <ClInclude Include="..\src\Compress\ICompress.h" />
     <ClInclude Include="..\src\Compress\PipeLine.h" />
     <ClInclude Include="..\src\Compress\RLE.h" />
