@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Sudoku\Sudoku.h" />
+    <ClInclude Include="..\src\Sudoku\SudokuCompressor.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>

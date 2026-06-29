@@ -6,5 +6,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Sudoku\Sudoku.h" />
+    <ClInclude Include="..\src\Sudoku\SudokuCompressor.h" />
   </ItemGroup>
 </Project>
