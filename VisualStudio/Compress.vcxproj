@@ -166,15 +166,19 @@
   <ItemGroup>
     <ClCompile Include="..\src\Compress\BitFiFo.cpp" />
     <ClCompile Include="..\src\Compress\BitFiFoTest.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\Compress\CompressTest.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\Compress\DynamicHuffman.cpp" />
-    <ClCompile Include="..\src\Compress\HuffmanTest.cpp" />
+    <ClCompile Include="..\src\Compress\HuffmanTest.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\Compress\ICompress.cpp" />
     <ClCompile Include="..\src\Compress\RLE.cpp" />
+    <ClCompile Include="..\src\Compress\StaticHuffman.cpp" />
+    <ClCompile Include="..\src\Compress\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Compress\BitFiFo.h" />
@@ -184,6 +188,8 @@
     <ClInclude Include="..\src\Compress\ICompress.h" />
     <ClInclude Include="..\src\Compress\PipeLine.h" />
     <ClInclude Include="..\src\Compress\RLE.h" />
+    <ClInclude Include="..\src\Compress\StaticHuffman.h" />
+    <ClInclude Include="..\src\Compress\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

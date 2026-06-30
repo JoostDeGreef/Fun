@@ -1,7 +1,8 @@
-#include <algorithm>
+﻿#include <algorithm>
 #include <array>
 #include <map>
 #include <iterator>
+#include <stdexcept>
 
 #include "BitFiFo.h"
 #include "Window.h"

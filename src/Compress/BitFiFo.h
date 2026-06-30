@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <memory>
 #include <vector>
@@ -11,11 +11,11 @@ class BitFiFo
 {
 private:
     typedef uint64_t data_type;
-    static const size_t data_bits = sizeof(data_type) * 8;
-    static const size_t overflow_block = 4096;
+    static constexpr size_t data_bits = sizeof(data_type) * 8;
+    static constexpr size_t overflow_block = 4096;
 
-    static const unsigned int mask[]; // (1 << n) - 1
-    static const uint64_t bit_mask[]; //  1 << n
+    static constexpr unsigned int mask(unsigned int n) { return (1 << n) - 1; }
+    static constexpr uint64_t bit_mask(unsigned int n) { return 1ull << n; }
 
 public:
     BitFiFo()
@@ -24,7 +24,7 @@ public:
         Clear();
     }
 
-    BitFiFo(BitFiFo&& other)
+    BitFiFo(BitFiFo&& other) noexcept
     {
         Swap(other);
     }
@@ -85,7 +85,7 @@ public:
         }
         else if (bit)
         {
-            m_data[m_end / data_bits] |= bit_mask[m_end % data_bits];
+            m_data[m_end / data_bits] |= bit_mask(m_end % data_bits);
         }
         m_end++;
     }
@@ -221,13 +221,13 @@ public:
             size_t firstSize = firstOffset + bits;
             if (firstSize <= data_bits)
             {
-                data = (m_data[index] >> firstOffset) & mask[bits];
+                data = (m_data[index] >> firstOffset) & mask(bits);
             }
             else
             {
                 firstSize = data_bits - firstOffset;
-                data = (m_data[index] >> firstOffset) & mask[firstSize];
-                data |= (m_data[index + 1] & mask[bits - firstSize]) << firstSize;
+                data = (m_data[index] >> firstOffset) & mask(firstSize);
+                data |= (m_data[index + 1] & mask(bits - firstSize)) << firstSize;
             }
             return true;
         }
@@ -247,7 +247,7 @@ public:
             const size_t index = m_begin / data_bits;
             const size_t firstOffset = m_begin % data_bits;
 
-            data = (m_data[index] & bit_mask[firstOffset]) ? 1 : 0;
+            data = (m_data[index] & bit_mask(firstOffset)) ? 1 : 0;
 
             return true;
         }

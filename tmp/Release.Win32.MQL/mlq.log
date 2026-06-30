@@ -1,0 +1,75 @@
+﻿  GridTest.cpp
+C:\Src\Fun\src\MQL\IOperator.h(33,64): warning C4100: 'children': unreferenced formal parameter
+  Operator.cpp
+C:\Src\Fun\src\MQL\IOperator.h(33,64): warning C4100: 'children': unreferenced formal parameter
+  OperatorRegistry.cpp
+C:\Src\Fun\src\MQL\IOperator.h(33,64): warning C4100: 'children': unreferenced formal parameter
+  OperatorRegistryTest.cpp
+C:\Src\Fun\src\MQL\IOperator.h(33,64): warning C4100: 'children': unreferenced formal parameter
+  OperatorTest.cpp
+C:\Src\Fun\src\MQL\IOperator.h(33,64): warning C4100: 'children': unreferenced formal parameter
+  ParserTest.cpp
+C:\Src\Fun\src\MQL\IOperator.h(33,64): warning C4100: 'children': unreferenced formal parameter
+  Parser.cpp
+C:\Src\Fun\src\MQL\IOperator.h(33,64): warning C4100: 'children': unreferenced formal parameter
+C:\Src\Fun\src\MQL\Parser.cpp(52,23): error C2653: 'Operator': is not a class or namespace name
+C:\Src\Fun\src\MQL\Parser.cpp(52,40): error C2664: 'std::vector<IOperatorPtr,std::allocator<IOperatorPtr>> Parser::Parse(const std::string &)': cannot convert argument 1 from 'const char' to 'const std::string &'
+C:\Src\Fun\src\MQL\Parser.cpp(52,40): message : Reason: cannot convert from 'const char' to 'const std::string'
+C:\Src\Fun\src\MQL\Parser.cpp(52,40): message : No constructor could take the source type, or constructor overload resolution was ambiguous
+C:\Src\Fun\src\MQL\Parser.cpp(41,35): message : see declaration of 'Parser::Parse'
+C:\Src\Fun\src\MQL\Parser.cpp(53,16): error C3536: 'op': cannot be used before it is initialized
+C:\Src\Fun\src\MQL\Parser.cpp(55,17): error C3861: 'StoreToken': identifier not found
+C:\Src\Fun\src\MQL\Parser.cpp(56,17): error C3861: 'StoreOperator': identifier not found
+C:\Src\Fun\src\MQL\Parser.cpp(66,21): error C3861: 'StoreToken': identifier not found
+C:\Src\Fun\src\MQL\Parser.cpp(69,21): error C3861: 'StoreToken': identifier not found
+C:\Src\Fun\src\MQL\Parser.cpp(73,21): error C3861: 'StoreToken': identifier not found
+C:\Src\Fun\src\MQL\Parser.cpp(83,9): error C2360: initialization of 'op' is skipped by 'case' label
+C:\Src\Fun\src\MQL\Parser.cpp(52): message : see declaration of 'op'
+C:\Src\Fun\src\MQL\Parser.cpp(87,9): error C2360: initialization of 'op' is skipped by 'case' label
+C:\Src\Fun\src\MQL\Parser.cpp(52): message : see declaration of 'op'
+  Symbol.cpp
+C:\Src\Fun\src\MQL\IOperator.h(33,64): warning C4100: 'children': unreferenced formal parameter
+C:\Src\Fun\src\MQL\Symbol.h(33,42): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Src\Fun\src\MQL\Symbol.h(33,42): error C2143: syntax error: missing ',' before '&'
+C:\Src\Fun\src\MQL\Symbol.h(47,13): error C2039: 'Operator': is not a member of '`global namespace''
+C:\Src\Fun\src\MQL\Symbol.h(47,21): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Src\Fun\src\MQL\Symbol.h(47,21): error C2143: syntax error: missing ';' before '&'
+C:\Src\Fun\src\MQL\Symbol.h(47,21): error C2365: 'Symbol::Operator': redefinition; previous definition was 'member function'
+C:\Src\Fun\src\MQL\Symbol.h(33): message : see declaration of 'Symbol::Operator'
+C:\Src\Fun\src\MQL\Symbol.h(47,43): error C2334: unexpected token(s) preceding '{'; skipping apparent function body
+C:\Src\Fun\src\MQL\Symbol.h(59,11): error C2039: 'Operator': is not a member of '`global namespace''
+C:\Src\Fun\src\MQL\Symbol.h(59,20): error C3646: 'm_operator': unknown override specifier
+C:\Src\Fun\src\MQL\Symbol.h(59,30): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Src\Fun\src\MQL\Symbol.cpp(35,15): error C2065: 'm_operator': undeclared identifier
+C:\Src\Fun\src\MQL\Symbol.cpp(35,29): error C2039: 'Operator': is not a member of '`global namespace''
+C:\Src\Fun\src\MQL\Symbol.cpp(35,37): error C2061: syntax error: identifier 'Operator'
+C:\Src\Fun\src\MQL\Symbol.cpp(57,15): error C2065: 'm_operator': undeclared identifier
+C:\Src\Fun\src\MQL\Symbol.cpp(57,29): error C2039: 'Operator': is not a member of '`global namespace''
+C:\Src\Fun\src\MQL\Symbol.cpp(57,37): error C2061: syntax error: identifier 'Operator'
+C:\Src\Fun\src\MQL\Symbol.cpp(79,11): error C2065: 'm_operator': undeclared identifier
+C:\Src\Fun\src\MQL\Symbol.cpp(101,20): error C2065: 'm_operator': undeclared identifier
+C:\Src\Fun\src\MQL\Symbol.cpp(101,40): error C2039: 'm_operator': is not a member of 'Symbol'
+C:\Src\Fun\src\MQL\Symbol.h(9): message : see declaration of 'Symbol'
+C:\Src\Fun\src\MQL\Symbol.cpp(127,33): error C2039: 'Operator': is not a member of '`global namespace''
+C:\Src\Fun\src\MQL\Symbol.cpp(127,41): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Src\Fun\src\MQL\Symbol.cpp(127,41): error C2143: syntax error: missing ',' before '&'
+C:\Src\Fun\src\MQL\Symbol.cpp(131,13): error C2039: 'm_operator': is not a member of 'Symbol'
+C:\Src\Fun\src\MQL\Symbol.h(9): message : see declaration of 'Symbol'
+C:\Src\Fun\src\MQL\Symbol.cpp(131,27): error C2039: 'Operator': is not a member of '`global namespace''
+C:\Src\Fun\src\MQL\Symbol.cpp(131,35): error C2061: syntax error: identifier 'Operator'
+  SymbolTest.cpp
+C:\Src\Fun\src\MQL\IOperator.h(33,64): warning C4100: 'children': unreferenced formal parameter
+C:\Src\Fun\src\MQL\SymbolTest.cpp(27,5): error C2065: 'Symbol': undeclared identifier
+C:\Src\Fun\src\MQL\SymbolTest.cpp(27,12): error C2146: syntax error: missing ';' before identifier 's1'
+C:\Src\Fun\src\MQL\SymbolTest.cpp(27,12): error C2065: 's1': undeclared identifier
+C:\Src\Fun\src\MQL\SymbolTest.cpp(28,5): error C2065: 'Symbol': undeclared identifier
+C:\Src\Fun\src\MQL\SymbolTest.cpp(28,12): error C2146: syntax error: missing ';' before identifier 's2'
+C:\Src\Fun\src\MQL\SymbolTest.cpp(28,12): error C2065: 's2': undeclared identifier
+C:\Src\Fun\src\MQL\SymbolTest.cpp(28,17): error C2653: 'Symbol': is not a class or namespace name
+C:\Src\Fun\src\MQL\SymbolTest.cpp(28,25): error C3861: 'Keyword': identifier not found
+C:\Src\Fun\src\MQL\SymbolTest.cpp(29,5): error C2065: 's1': undeclared identifier
+C:\Src\Fun\src\MQL\SymbolTest.cpp(29,10): error C2065: 's2': undeclared identifier
+C:\Src\Fun\src\MQL\SymbolTest.cpp(30,5): error C2065: 's1': undeclared identifier
+C:\Src\Fun\src\MQL\SymbolTest.cpp(30,5): error C2065: 's2': undeclared identifier
+C:\Src\Fun\src\MQL\SymbolTest.cpp(30,5): error C2737: 'gtest_ar': const object must be initialized
+  Value.cpp

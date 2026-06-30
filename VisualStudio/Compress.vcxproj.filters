@@ -22,6 +22,12 @@
     <ClCompile Include="..\src\Compress\HuffmanTest.cpp">
       <Filter>src\Compress\Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Compress\StaticHuffman.cpp">
+      <Filter>src\Compress\Huffman</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Compress\Window.cpp">
+      <Filter>src\Compress\Window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Compress\BitFiFo.h">
@@ -42,8 +48,14 @@
     <ClInclude Include="..\src\Compress\ICompress.h">
       <Filter>src\Compress\Generic</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Compress\StaticHuffman.h">
+      <Filter>src\Compress\Huffman</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\Compress\Huffman.h">
       <Filter>src\Compress\Huffman</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Compress\Window.h">
+      <Filter>src\Compress\Window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +82,12 @@
     </Filter>
     <Filter Include="src\Compress\RLE">
       <UniqueIdentifier>{3d50644d-3e91-4c31-941a-3084bd28a8d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compress\Arithmic">
+      <UniqueIdentifier>{ad7c7182-781e-4bb0-8bcd-a96713d0a199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Compress\Window">
+      <UniqueIdentifier>{55a574a7-7829-4a60-828e-a5a06b861a32}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

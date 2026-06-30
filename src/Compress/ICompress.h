@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <vector>
 #include <memory>
@@ -20,15 +20,27 @@ public:
     virtual void Finish(std::vector<unsigned char>& ioBuffer) = 0;
 };
 
+enum class CompressionAlgo
+{
+    DynamicHuffman,
+    StaticHuffman,
+    Window,
+    RLE,
+    RLE_DynamicHuffman,
+    RLE_StaticHuffman,
+    Window_DynamicHuffman,
+    Window_RLE_DynamicHuffman
+};
+
 class CompressorFactory
 {
 public:
-    static std::shared_ptr<ICompressor> Create();
+    static std::shared_ptr<ICompressor> Create(CompressionAlgo ca);
 };
 
 class DeCompressorFactory
 {
 public:
-    static std::shared_ptr<IDeCompressor> Create();
+    static std::shared_ptr<IDeCompressor> Create(CompressionAlgo ca);
 };
 

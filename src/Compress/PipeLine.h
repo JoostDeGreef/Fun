@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <tuple>
 
@@ -60,11 +60,11 @@ class PipeLineCompressor : public ICompressor, PipeLineCommon<Compressors...>
 public:
     void Compress(std::vector<unsigned char>& ioBuffer) override
     {
-        this->Apply([&ioBuffer](ICompressor& compressor) {compressor.Compress(ioBuffer); }, false);
+        this->Apply([&ioBuffer](ICompressor& compressor) {compressor.Compress(ioBuffer); }, true);
     }
     void Finish(std::vector<unsigned char>& ioBuffer) override
     {
-        this->Apply([&ioBuffer](ICompressor& compressor) {compressor.Finish(ioBuffer); }, false);
+        this->Apply([&ioBuffer](ICompressor& compressor) {compressor.Finish(ioBuffer); }, true);
     }
 };
 
@@ -74,11 +74,11 @@ class PipeLineDeCompressor : public IDeCompressor, PipeLineCommon<DeCompressors.
 public:
     void DeCompress(std::vector<unsigned char>& ioBuffer) override
     {
-        this->Apply([&ioBuffer](IDeCompressor& decompressor) {decompressor.DeCompress(ioBuffer); }, true);
+        this->Apply([&ioBuffer](IDeCompressor& decompressor) {decompressor.DeCompress(ioBuffer); }, false);
     }
     void Finish(std::vector<unsigned char>& ioBuffer) override
     {
-        this->Apply([&ioBuffer](IDeCompressor& decompressor) {decompressor.Finish(ioBuffer); }, true);
+        this->Apply([&ioBuffer](IDeCompressor& decompressor) {decompressor.Finish(ioBuffer); }, false);
     }
 };
 

@@ -1,4 +1,4 @@
-#include <memory>
+﻿#include <memory>
 #include <random>
 #include <vector>
 #include <map>
@@ -17,7 +17,7 @@ enum class InputType
     Single,       // one value (42)
 };
 
-class CompressTest : public Test
+class CompressTest : public testing::TestWithParam<CompressionAlgo>
 {
 protected:
 #ifdef _DEBUG
@@ -158,8 +158,9 @@ inline std::ostream& operator<<(std::ostream& stream, InputType const& it)
     return stream << to_string(it);
 }
 
-TEST_F(CompressTest, Ratio)
+TEST_P(CompressTest, Ratio)
 {
+    CompressionAlgo ca = GetParam();
     class Data
     {
     public:
@@ -178,8 +179,8 @@ TEST_F(CompressTest, Ratio)
     for (auto inputType : GetInputTypes())
     {
         std::vector<unsigned char> input = GetInputData(inputType);
-        auto compressor = CompressorFactory::Create();
-        auto deCompressor = DeCompressorFactory::Create();
+        auto compressor = CompressorFactory::Create(ca);
+        auto deCompressor = DeCompressorFactory::Create(ca);
         auto compressed = input;
         sw.Reset();
         compressor->Finish(compressed);
@@ -193,17 +194,17 @@ TEST_F(CompressTest, Ratio)
         info.emplace(inputType,Data((double)compressed.size() / (double)input.size(), t0, t1));
     }
     std::stringstream s;
-    for (auto it : info)
+    for (auto &it : info)
     {
         s << "  " << it.first;
     }
     s << "   Time (ms)";
     SUCCEED() << s.str();
-    std::cout << s.str() << std::endl;
+    //std::cout << s.str() << std::endl;
     long long t0 = 0, t1 = 0;
     std::stringstream().swap(s);
     s << "  ";
-    for (auto it : info)
+    for (auto &it : info)
     {
         size_t l = to_string(it.first).size();
         auto r = std::to_string(static_cast<int>(it.second.m_ratio * 100));
@@ -213,16 +214,17 @@ TEST_F(CompressTest, Ratio)
     }
     s << " " << t0 << "/" << t1;
     SUCCEED() << s.str();
-    std::cout << s.str() << std::endl;
+    //std::cout << s.str() << std::endl;
 }
 
-TEST_F(CompressTest, DISABLED_RatioOri)
+TEST_P(CompressTest, DISABLED_RatioOri)
 {
     for (auto inputType : GetInputTypes())
     {
         std::vector<unsigned char> input = GetInputData(inputType);
-        auto compressor = CompressorFactory::Create();
-        auto deCompressor = DeCompressorFactory::Create();
+        CompressionAlgo ca = GetParam();
+        auto compressor = CompressorFactory::Create(ca);
+        auto deCompressor = DeCompressorFactory::Create(ca);
         auto compressed = input;
         compressor->Finish(compressed);
         auto deCompressed = compressed;
@@ -232,3 +234,13 @@ TEST_F(CompressTest, DISABLED_RatioOri)
     }
 }
 
+INSTANTIATE_TEST_CASE_P(InterestingAlgorithms, CompressTest,
+    testing::Values(
+        CompressionAlgo::DynamicHuffman,
+        CompressionAlgo::StaticHuffman,  
+        CompressionAlgo::Window,
+        CompressionAlgo::RLE,
+        CompressionAlgo::RLE_DynamicHuffman,
+        CompressionAlgo::RLE_StaticHuffman,
+        CompressionAlgo::Window_DynamicHuffman,
+        CompressionAlgo::Window_RLE_DynamicHuffman));

@@ -1,5 +1,12 @@
-﻿  HuffmanTest.cpp
-  Generating code
-  Not all modules are compiled with -Gy (function comdat), build without incremental LTCG.
-  Finished generating code
-  Compress.vcxproj -> C:\Src\Fun\VisualStudio\..\bin\Compress.Release.Win32.exe
+﻿  BitFiFo.cpp
+  BitFiFoTest.cpp
+  CompressTest.cpp
+  DynamicHuffman.cpp
+  HuffmanTest.cpp
+C:\Src\Fun\src\Compress\Huffman.h(296,29): warning C4100: 'length': unreferenced formal parameter
+C:\Src\Fun\src\Compress\Huffman.h(296,19): warning C4100: 'data': unreferenced formal parameter
+  ICompress.cpp
+  RLE.cpp
+  StaticHuffman.cpp
+LINK : fatal error C1047: The object or library file 'C:\Src\Fun\VisualStudio\..\..\3rdParty\lib\GoogleTest.Release.Win32.lib' was created by a different version of the compiler than other objects like 'C:\Src\Fun\VisualStudio\..\tmp\Release.Win32.Compress\BitFiFo.obj'; rebuild all objects and libraries with the same compiler
+LINK : fatal error LNK1257: code generation failed

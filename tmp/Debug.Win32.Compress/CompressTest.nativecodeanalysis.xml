@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Src\3rdParty\include\gtest\</FILEPATH>
+      <FILENAME>gtest.h</FILENAME>
+      <LINE>2987</LINE>
+      <COLUMN>2</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'testing::internal::Mutex::owner_thread_id_' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>testing::internal::Mutex::{ctor}</FUNCTION>
+    <DECORATED>??0Mutex@internal@testing@@QAE@W4StaticConstructorSelector@012@@Z</DECORATED>
+    <FUNCLINE>2987</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>testing::internal::Mutex::owner_thread_id_</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Src\3rdParty\include\gtest\</FILEPATH>
+      <FILENAME>gtest.h</FILENAME>
+      <LINE>2987</LINE>
+      <COLUMN>2</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'testing::internal::Mutex::critical_section_' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>testing::internal::Mutex::{ctor}</FUNCTION>
+    <DECORATED>??0Mutex@internal@testing@@QAE@W4StaticConstructorSelector@012@@Z</DECORATED>
+    <FUNCLINE>2987</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>testing::internal::Mutex::critical_section_</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Src\3rdParty\include\gtest\</FILEPATH>
+      <FILENAME>gtest.h</FILENAME>
+      <LINE>2987</LINE>
+      <COLUMN>2</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'testing::internal::Mutex::critical_section_init_phase_' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>testing::internal::Mutex::{ctor}</FUNCTION>
+    <DECORATED>??0Mutex@internal@testing@@QAE@W4StaticConstructorSelector@012@@Z</DECORATED>
+    <FUNCLINE>2987</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>testing::internal::Mutex::critical_section_init_phase_</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Src\3rdParty\include\gtest\</FILEPATH>
+      <FILENAME>gtest.h</FILENAME>
+      <LINE>2987</LINE>
+      <COLUMN>2</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'testing::internal::Mutex::type_' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>testing::internal::Mutex::{ctor}</FUNCTION>
+    <DECORATED>??0Mutex@internal@testing@@QAE@W4StaticConstructorSelector@012@@Z</DECORATED>
+    <FUNCLINE>2987</FUNCLINE>
+    <ADDITIONALINFO>
+      <targetSymbol>testing::internal::Mutex::type_</targetSymbol>
+    </ADDITIONALINFO>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>

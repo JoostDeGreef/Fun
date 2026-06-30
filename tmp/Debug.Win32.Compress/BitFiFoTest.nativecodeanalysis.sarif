@@ -1,0 +1,203 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "Variable 'testing::internal::Mutex::owner_thread_id_' is uninitialized. Always initialize a member variable (type.6)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Src/3rdParty/include/gtest/gtest.h"
+                },
+                "region": {
+                  "startLine": 2987,
+                  "startColumn": 3,
+                  "endLine": 2987,
+                  "endColumn": 3
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0Mutex@internal@testing@@QAE@W4StaticConstructorSelector@012@@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "testing::internal::Mutex::owner_thread_id_"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "Variable 'testing::internal::Mutex::critical_section_' is uninitialized. Always initialize a member variable (type.6)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Src/3rdParty/include/gtest/gtest.h"
+                },
+                "region": {
+                  "startLine": 2987,
+                  "startColumn": 3,
+                  "endLine": 2987,
+                  "endColumn": 3
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0Mutex@internal@testing@@QAE@W4StaticConstructorSelector@012@@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "testing::internal::Mutex::critical_section_"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "Variable 'testing::internal::Mutex::critical_section_init_phase_' is uninitialized. Always initialize a member variable (type.6)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Src/3rdParty/include/gtest/gtest.h"
+                },
+                "region": {
+                  "startLine": 2987,
+                  "startColumn": 3,
+                  "endLine": 2987,
+                  "endColumn": 3
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0Mutex@internal@testing@@QAE@W4StaticConstructorSelector@012@@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "testing::internal::Mutex::critical_section_init_phase_"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "Variable 'testing::internal::Mutex::type_' is uninitialized. Always initialize a member variable (type.6)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Src/3rdParty/include/gtest/gtest.h"
+                },
+                "region": {
+                  "startLine": 2987,
+                  "startColumn": 3,
+                  "endLine": 2987,
+                  "endColumn": 3
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0Mutex@internal@testing@@QAE@W4StaticConstructorSelector@012@@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "testing::internal::Mutex::type_"
+          }
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.29.30159.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "commandLine": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX86\\x86\\c1xx.dll\" -ACf{1F7B090C-16DB-4822-966A-A93D26ED4681} -ACpmspft140.dll -Alint -D_PREFAST_ -D_AST_FE_ -Analyze -zm0x00D5D1C0 -il C:\\Users\\joost\\AppData\\Local\\Temp\\_CL_47bd3b88ast -typedil -f ..\\src\\Compress\\BitFiFoTest.cpp -Ze -D_MSC_EXTENSIONS -Zp8 -Gs -pc \\:/ -D_MSC_VER=1929 -D_MSC_FULL_VER=192930159 -D_MSC_BUILD=0 -D_WIN32 -D_M_IX86=600 -D_M_IX86_FP=2 -GR -D_CPPRTTI -I C:\\Src\\Fun\\include -I C:\\Src\\3rdParty\\include -nologo -W 4 -diagnostics:column -D_GUARDOVERFLOW_CRT_ALLOCATORS=1 -Ot -DCODE_ANALYSIS -D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE -D_UNICODE -DUNICODE -EHs -D_CPPUNWIND -EHc -D__MSVC_RUNTIME_CHECKS -RTCs -RTCu -MDd -D_DEBUG -D_MT -D_DLL -GS -D_M_FP_PRECISE -Zc:wchar_t -Zc:forScope -FoC:\\Src\\Fun\\VisualStudio\\..\\tmp\\Debug.Win32.Compress\\BitFiFoTest.obj -FdC:\\Src\\Fun\\VisualStudio\\..\\tmp\\Debug.Win32.Compress\\vc142.pdb -external:W 4 -Gd -analyze:projectdirectory C:\\Src\\Fun\\VisualStudio -analyze:rulesetdirectory ;C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Team Tools\\Static Analysis Tools\\\\Rule Sets; -analyze:ruleset C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Team Tools\\Static Analysis Tools\\Rule Sets\\NativeRecommendedRules.ruleset -analyze:quiet -analyze:plugin C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX86\\x86\\EspXEngine.dll -FC -errorreport:prompt -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\cppwinrt -I C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\Include\\um -external:I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\include -external:I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\atlmfc\\include -external:I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\VS\\include -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\ucrt -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\shared -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\winrt -external:I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\cppwinrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\cppwinrt -external:I C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\Include\\um -I C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\Include\\um",
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///C:/Src/3rdParty/include/gtest/gtest.h"
+          },
+          "roles": [
+            "resultFile"
+          ],
+          "hashes": {
+            "md5": "c8cb1de04e13e1a268469720ea2b554f"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/src/fun/src/compress/compresstest.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "md5": "f512465cc2a93e3844d89847a5595194"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/src/fun/src/compress/commontestfunctionality.h"
+          },
+          "hashes": {
+            "md5": "5191145ca4ef69888a10ea151982d11c"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/src/fun/src/compress/icompress.h"
+          },
+          "hashes": {
+            "md5": "1885103ef5fd33676b5b65043e948e93"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/src/fun/src/compress/bitfifotest.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "md5": "d601c8b546c5b88a4b45e8541dd16d67"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/src/fun/src/compress/bitfifo.h"
+          },
+          "hashes": {
+            "md5": "c6cd4528da3f056aad48cfd44e53c51c"
+          }
+        }
+      ]
+    }
+  ]
+}
